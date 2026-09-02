@@ -5,7 +5,25 @@
 
 int main()
 {
-    std::cout << "Hello World!\n";
+	
+	//introduction
+	std::cout << "******************************\n";
+	std::cout << "Welcome To AceZombies!!!!!\n";
+	std::cout << "******************************\n";
+	
+	std::string person;
+	std::cout << "Enter Name: ";
+	std::cin >> person;
+	std::cout << '\n';
+	std::cout << '\n';
+	
+	std::cout << "OUR HERO " << person << " IS HERE!!\n";
+	std::cout << '\n';
+	std::cout << "Please Save us from the Ace's!!\n";
+
+	
+
+
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
