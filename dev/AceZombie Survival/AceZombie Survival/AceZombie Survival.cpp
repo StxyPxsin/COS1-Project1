@@ -2,29 +2,57 @@
 //
 
 #include <iostream>
+#include <vector>     
+#include <string>
+#include <cstdlib>    
+#include <ctime>      
+#include <memory>     
+#include "Player.h"
+#include "CityLevel.h"
+
+
+int getValidatedInput(int min, int max) {
+    int input;
+    while (true) {
+        // If input is an integer and within valid numerical min/max parameters, return it immediately
+        if (std::cin >> input && input >= min && input <= max) {
+            return input;
+        }
+        // If code execution falls here, the entry was bad. Output warning and flush input stream flags.
+        std::cout << "[!] Invalid action. Input a matching number (" << min << "-" << max << "): ";
+        std::cin.clear();             // Clears stream internal error state flags
+        std::cin.ignore(10000, '\n'); // Ignores and purges bad characters sitting in the buffer cache
+    }
+}
 
 int main()
 {
-	
-	//introduction
-	std::cout << "******************************\n";
-	std::cout << "Welcome To AceZombies!!!!!\n";
-	std::cout << "******************************\n";
-	
-	std::string person;
-	std::cout << "Enter Name: ";
-	std::cin >> person;
-	std::cout << '\n';
-	std::cout << '\n';
-	
-	std::cout << "OUR HERO " << person << " IS HERE!!\n";
-	std::cout << '\n';
-	std::cout << "Please Save us from the Ace's!!\n";
+    std::srand(static_cast<unsigned int>(std::time(0)));
 
-	
+    // 1. POPULATE LEVEL:
+    // Create instances of city stages
+    std::vector<CityLevel> levels;
+    levels.push_back(CityLevel(
+        "Austin", "Marshal Davis",
+        "The concrete is baked hot in Austin. You crawl through a window into a radio tower.\nThere you meet Marshal Davis, a tech broadcasting loops for survivors.",
+        "Marshal Davis points his rifle out the window, clearing a path. 'Go, kid. I'll stay.'",
+        "Runner", 3
+    ));
+    levels.push_back(CityLevel(
+        "Chicago", "Dr. Helen Vance",
+        "The high-rises are freezing, and the wind scratches through broken windows.\nIn a lab, you meet Dr. Helen Vance, a scientist tracking viral patterns.",
+        "Dr. Vance packs her notes into your bag. 'The data is safe. Let's move.'",
+        "Armored Riot", 5
+    ));
+    levels.push_back(CityLevel(
+        "New York", "Captain Briggs",
+        "Times Square is a maze of rusted yellow cabs and glowing red eyes.\nOn top of a checkpoint, you meet Captain Briggs, holding down the line.",
+        "Captain Briggs blows the structural access bridges behind you. The mega-swarm falls. You made it.",
+        "Goliath Swarm Master", 7
+    ));
 
-
-}
+    
+    }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
