@@ -1,30 +1,11 @@
 # 🚀 Welcome to Project & Portfolio!
 
-This repository will be used to keep track of research and development conducted in this class. Follow the instructions below to get started.
-cos
-### Getting Started
-
-**1.** Review the [About](./docs/01_about/README.md) README and all of the links it provides.
-
-**2.** Review the documentation and [Getting Started](./docs/02_getting_started/README.md) steps in this repository's docs folder.
-
-**3.** Attend the first Live Lecture to see a live setup demo. If you are unable to attend, make sure to watch the archive.
-
-### Next Steps...
-
-After completing the above steps, feel free to begin updating this readme where indicated below. Remember to update this document each week to receive proper credit for the weekly Milestone assignment.
-
-<br>
-
-> ❗️ &nbsp; Now that you have read to this point, go ahead and delete this sentence and everything above it.
-
-<br>
 
 # Project & Portfolio 1
 
-### Student First & Last Name
+### Ariel Mauricio
 
-Hello my name is [enter name]. I am a student from [where are you from?]. The purpose of this repository is to practice development using version control. This work will help me begin to build a portfolio of skills and accomplishment that can be shared in the future.
+Hello my name is [Ariel Mauricio]. I am a student from [Houston, Texas]. The purpose of this repository is to practice development using version control. This work will help me begin to build a portfolio of skills and accomplishment that can be shared in the future.
 
 <br>
 
@@ -44,8 +25,18 @@ Each week I will summarize my milestone activity and progress by writing a stand
 
 ### Week 1
 
-Replace this paragraph with your stand up for this week. Use the prompts above to summarize your most recent milestone activity and work.
+Overview – What did you work on this past week?
 
+- This past week I have worked on the class files specifically the player files, also finished the cityLevel file. These were the key points. I have to know what to do on my version control I am currently working on it.
+
+ Challenges – What obstacles did you encounter, and how are you addressing them?
+
+- Challenges i faced were trying to figure out how to make my player and figure out how the health of the player will play a part into it also how to generate multiple cities by levels.
+
+ Accomplishments – What is something you learned, improved, or "leveled up" on this week?
+ - I learned and improved on how to properly get to the next wave on the city levels I have. 
+  Next Steps – What do you plan to prioritize before your next milestone? 
+  - What I am prioritizing before the next milestone is understanding my project better cause some of the work I did I honestly dont know why some of it works and the others dont. I am also going to work on the TextNarrative for the story line.
 ### Week 2
 
 My next stand up will go here...
