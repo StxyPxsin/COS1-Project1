@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="AceZombie Survival/AceZombie Survival.vcxproj" />
+  <Project Path="AceZombie Survival/AceZombie Survival.vcxproj" Id="24d4b9ac-0e73-4515-af30-9d07c06da21a" />
 </Solution>
