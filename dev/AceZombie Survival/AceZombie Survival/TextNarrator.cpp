@@ -10,12 +10,12 @@ void TextNarrator::printMainTitle() const {
 void TextNarrator::printIntroSequence() const {
     std::cout << "\nOUR HERO IS HERE!!\n";
     std::cout << "Please save us from the Aces!\n";
-    std::cout << "You are a courier hauling the structural viral cure code through infected cities.\n";
+    std::cout << "The carrier of the viral cure code that will go through infected cities.\n";
 }
 
 void TextNarrator::printCityIntro(const CityLevel& level) const {
     std::cout << "\n=========================================================\n";
-    std::cout << " ARRIVING IN LEVEL: " << level.getName() << "\n";
+    std::cout << " ARRIVING IN CITY: " << level.getName() << "\n";
     std::cout << "=========================================================\n";
     std::cout << level.getIntroStory() << "\n";
     std::cout << "Local Threat Multiplier: " << level.getZombieVariant() << " Aces\n";
