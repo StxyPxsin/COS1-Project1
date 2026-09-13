@@ -75,36 +75,54 @@ int main() {
             isNewLevel = false;
         }
 
+        // Show player metrics and actions layout dashboard
         narrator.printPlayerDashboard(*player, activeCity);
         narrator.printMainMenu();
 
         int choice = getValidatedInput(1, 4); // Processes menu control configurations safely
-        if (choice == 0) {
-            int found = (std::rand() % 2) + 1;
-            player->modifySupplies(found);
-            std::cout << "[+] SUCCESS: Discovered emergency provisions! Gained " << found << " supply boxes.\n";
-        }
-        else if (choice == 1) {
-            int found = (std::rand() % 4) + 2;
-            player->modifyAmmo(found);
-            std::cout << "[+] AMMO DROP: Recovered an ammunition pack! Loaded +" << found << " rounds.\n";
-        }
-        else {
-            std::string fullZombieName = activeCity.getZombieVariant() + " Ace";
-            std::cout << "[!] AMBUSH: A pack of frantic " << fullZombieName << " zombies attacks your position!\n";
-            if (player->getAmmo() >= 3) {
-                player->modifyAmmo(-3);
-                int damage = (std::rand() % 15) + 5;
-                player->modifyHp(-damage);
-                std::cout << "[-] COMBAT: You burn 3 rounds downing the horde. Took " << damage << "% damage.\n";
+
+        if (choice == 1) {
+            // ACTION SELECTION 1: ACTION ENCOUNTER SCRIPTS PROMPTS
+            std::cout << "\nYou step out to scavenge sector blocks alongside " << activeCity.getSurvivorName() << "...\n";
+            int roll = std::rand() % 3; // Generates number 0, 1, or 2
+
+            if (roll == 0) {
+                int found = (std::rand() % 2) + 1;
+                player->modifySupplies(found);
+                std::cout << "[+] SUCCESS: Discovered emergency provisions! Gained " << found << " supply boxes.\n";
+            }
+            else if (roll == 1) {
+                int found = (std::rand() % 4) + 2;
+                player->modifyAmmo(found);
+                std::cout << "[+] AMMO DROP: Recovered an ammunition pack! Loaded +" << found << " rounds.\n";
             }
             else {
-                int damage = (std::rand() % 35) + 20;
-                player->modifyHp(-damage);
-                std::cout << "[X] OUT OF AMMO: Forced into hand-to-hand combat! Escaped, but took a brutal " << damage << "% damage from the Aces.\n";
+                std::string fullZombieName = activeCity.getZombieVariant() + " Ace";
+                std::cout << "[!] AMBUSH: A pack of frantic " << fullZombieName << " zombies attacks your position!\n";
+                if (player->getAmmo() >= 3) {
+                    player->modifyAmmo(-3);
+                    int damage = (std::rand() % 15) + 5;
+                    player->modifyHp(-damage);
+                    std::cout << "[-] COMBAT: You burn 3 rounds downing the horde. Took " << damage << "% damage.\n";
+                }
+                else {
+                    int damage = (std::rand() % 35) + 20;
+                    player->modifyHp(-damage);
+                    std::cout << "[X] OUT OF AMMO: Forced into hand-to-hand combat! Escaped, but took a brutal " << damage << "% damage from the Aces.\n";
+                }
             }
         }
-    }
+        else if (choice == 2) {
+            // ACTION SELECTION 2: RESOURCE AND POOLS MODIFICATION RECOVERY LINES
+            if (player->getSupplies() > 0) {
+                player->modifySupplies(-1);
+                player->modifyHp(30);
+                std::cout << "\n[+] You consume a supply box and patch up your structural injuries. Restored 30% HP!\n";
+            }
+            else {
+                std::cout << "\n[X] Action failed. You possess zero emergency supplies inside your bag.\n";
+            }
+        }
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
