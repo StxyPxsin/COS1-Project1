@@ -61,6 +61,50 @@ int main() {
     // Allocate our Player object instance with their preferred custom structural profile
     std::unique_ptr<Player> player = std::make_unique<Player>(chosenName);
     narrator.printIntroSequence();
+
+    int currentLevelIndex = 0;
+    bool isNewLevel = true;
+    bool playerWantsToExit = false;
+
+    while (player->getHp() > 0 && currentLevelIndex < static_cast<int>(levels.size()) && !playerWantsToExit) {
+        CityLevel& activeCity = levels[currentLevelIndex]; // Pull active level details
+
+        // Trigger entrance storyline updates on level shifts
+        if (isNewLevel) {
+            narrator.printCityIntro(activeCity);
+            isNewLevel = false;
+        }
+
+        narrator.printPlayerDashboard(*player, activeCity);
+        narrator.printMainMenu();
+
+        int choice = getValidatedInput(1, 4); // Processes menu control configurations safely
+        if (choice == 0) {
+            int found = (std::rand() % 2) + 1;
+            player->modifySupplies(found);
+            std::cout << "[+] SUCCESS: Discovered emergency provisions! Gained " << found << " supply boxes.\n";
+        }
+        else if (choice == 1) {
+            int found = (std::rand() % 4) + 2;
+            player->modifyAmmo(found);
+            std::cout << "[+] AMMO DROP: Recovered an ammunition pack! Loaded +" << found << " rounds.\n";
+        }
+        else {
+            std::string fullZombieName = activeCity.getZombieVariant() + " Ace";
+            std::cout << "[!] AMBUSH: A pack of frantic " << fullZombieName << " zombies attacks your position!\n";
+            if (player->getAmmo() >= 3) {
+                player->modifyAmmo(-3);
+                int damage = (std::rand() % 15) + 5;
+                player->modifyHp(-damage);
+                std::cout << "[-] COMBAT: You burn 3 rounds downing the horde. Took " << damage << "% damage.\n";
+            }
+            else {
+                int damage = (std::rand() % 35) + 20;
+                player->modifyHp(-damage);
+                std::cout << "[X] OUT OF AMMO: Forced into hand-to-hand combat! Escaped, but took a brutal " << damage << "% damage from the Aces.\n";
+            }
+        }
+    }
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
