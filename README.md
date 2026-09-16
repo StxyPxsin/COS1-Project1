@@ -39,7 +39,14 @@ Overview – What did you work on this past week?
   - What I am prioritizing before the next milestone is understanding my project better cause some of the work I did I honestly dont know why some of it works and the others dont. I am also going to work on the TextNarrative for the story line.
 ### Week 2
 
-My next stand up will go here...
+Overview – What did you work on this past week?
+-so far I have 1 and 2 options in the menu can work currently Venture out to Scavenge the sector ruins and  Rest and bind structural wounds. The narrative of the story line is working as well.
+Challenges – What obstacles did you encounter, and how are you addressing them?
+- the challenges I ran into were moving single-file program structure and separating the project into standalone .h and .cpp file layers. This initially caused multi-definition and circular dependency linker errors inside the Visual Studio builder. I addressed them by completely isolating long-form screen text output processing into a separate, dedicated TextNarrator file framework.
+- Accomplishments – What is something you learned, improved, or "leveled up" on this week?
+-I studied input streams, rede my methods to use consistent return validations, and practice tracing variable allocations using breakpoints inside the Visual Studio debugger suite.
+- Next Steps – What do you plan to prioritize before Week 3?
+- I will be finishing up the last 2 options I have for the menu file.
 
 ### Week 3
 

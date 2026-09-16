@@ -18,8 +18,6 @@ public:
     std::string getSurvivorName() const;
     std::string getZombieVariant() const;
     int getSuppliesRequired() const;
-
-    //outputs story details 
-    void printIntro() const;
-    void printVictory() const;
+    std::string getIntroStory() const;
+    std::string getVictoryStory() const;
 };
