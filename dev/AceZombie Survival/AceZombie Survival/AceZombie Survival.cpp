@@ -123,6 +123,7 @@ int main() {
                 std::cout << "\n[X] Action failed. You possess zero emergency supplies inside your bag.\n";
             }
         }
+    }
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu
