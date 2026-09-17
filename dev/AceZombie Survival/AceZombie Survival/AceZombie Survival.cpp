@@ -12,16 +12,29 @@
 #include "TextNarrator.h"
 
 int getValidatedInput(int min, int max) {
-    int input;
+    std::string userInput;
+    int validatedNumber;
+
     while (true) {
-        if (std::cin >> input && input >= min && input <= max) {
-            return input; // Correct matching choice, pass it out to the handler
+        std::getline(std::cin, userInput);
+
+        try {
+            size_t charactersProcessed = 0;
+            // Attempt conversion via string-to-integer library utility
+            validatedNumber = std::stoi(userInput, &charactersProcessed);
+
+            // Rejects trailing garbage text entries (e.g., typing "1abc" or "2 spaces")
+            if (charactersProcessed == userInput.length() && validatedNumber >= min && validatedNumber <= max) {
+                return validatedNumber; // Match confirmed, break filter loop
+            }
         }
-        std::cout << "[!] Invalid assignment option. Choose a option matching (" << min << "-" << max << "): ";
-        std::cin.clear();             // Clears stream internal error condition flags
-        std::cin.ignore(10000, '\n'); // Flushes remaining garbage memory bits inside the buffer
+        catch (...) {
+            // Catches any bad formats or integer overflow limit failures without crashing
+        }
+        std::cout << "[!] Invalid assignment option. Choose an option matching (" << min << "-" << max << "): ";
     }
 }
+
 int main() {
     // Seed our random roll tracking tables based on system calendar clocks
     std::srand(static_cast<unsigned int>(std::time(0)));

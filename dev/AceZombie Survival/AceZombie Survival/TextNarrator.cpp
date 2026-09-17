@@ -1,32 +1,41 @@
 #include "TextNarrator.h"
 #include <iostream>
 
+#include "TextNarrator.h"
+#include <iostream>
+
+// Outputs the main application header banner card
 void TextNarrator::printMainTitle() const {
     std::cout << "*********************************************************\n";
     std::cout << "               WELCOME TO ACEZOMBIES!!!!!                \n";
     std::cout << "*********************************************************\n";
 }
 
+// Outputs the background lore context text
 void TextNarrator::printIntroSequence() const {
     std::cout << "\nOUR HERO IS HERE!!\n";
     std::cout << "Please save us from the Aces!\n";
-    std::cout << "The carrier of the viral cure code that will go through infected cities.\n";
+    std::cout << "You are a courier hauling the structural viral cure code through infected cities.\n";
 }
 
+// Prints narrative contextual introduction lines when a level changes
 void TextNarrator::printCityIntro(const CityLevel& level) const {
     std::cout << "\n=========================================================\n";
-    std::cout << " ARRIVING IN CITY: " << level.getName() << "\n";
+    std::cout << " ARRIVING IN LEVEL: " << level.getName() << "\n";
     std::cout << "=========================================================\n";
     std::cout << level.getIntroStory() << "\n";
     std::cout << "Local Threat Multiplier: " << level.getZombieVariant() << " Aces\n";
 }
 
+// Prints thematic story text upon level completion
 void TextNarrator::printCityVictory(const CityLevel& level) const {
     std::cout << "\n---------------------------------------------------------\n";
     std::cout << "[>>>] SUCCESS! ESCAPING " << level.getName() << "...\n";
     std::cout << level.getVictoryStory() << "\n";
     std::cout << "---------------------------------------------------------\n";
 }
+
+// Renders the scannable resources metrics monitor
 void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& level) const {
     std::cout << "\n---------------------------------------------------------\n";
     std::cout << "CITY: " << level.getName() << " | LOCAL COMPANION: " << level.getSurvivorName() << "\n";
@@ -34,6 +43,7 @@ void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& l
     std::cout << "---------------------------------------------------------\n";
 }
 
+// Displays available interactive choices
 void TextNarrator::printMainMenu() const {
     std::cout << "MAIN STRATEGY COMMAND BOARD:\n";
     std::cout << "1. Venture out to Scavenge the sector ruins\n";
@@ -43,6 +53,7 @@ void TextNarrator::printMainMenu() const {
     std::cout << "Choose action (1-4): ";
 }
 
+// Renders final run results and summary messages
 void TextNarrator::printGameOverScreen(bool hasWon, const std::string& playerName) const {
     std::cout << "\n=========================================================\n";
     if (hasWon) {
@@ -55,5 +66,5 @@ void TextNarrator::printGameOverScreen(bool hasWon, const std::string& playerNam
         std::cout << "=========================================================\n";
         std::cout << "The network code went silent. " << playerName << " fell to the Aces.\n";
     }
- std::cout << "=========================================================\n";
+    std::cout << "=========================================================\n";
 }
