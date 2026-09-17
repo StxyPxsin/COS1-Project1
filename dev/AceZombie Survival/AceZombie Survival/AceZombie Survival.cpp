@@ -123,6 +123,19 @@ int main() {
                 std::cout << "\n[X] Action failed. You possess zero emergency supplies inside your bag.\n";
             }
         }
+        else if (choice == 3) {
+            // ACTION SELECTION 3: SECTOR THRESHOLD EVALUATIONS AND PROGRESSION INCREMENTORS
+            if (player->getSupplies() >= activeCity.getSuppliesRequired()) {
+                narrator.printCityVictory(activeCity);
+                player->resetSuppliesForNewCity(); // Clear current inventory pools
+                currentLevelIndex++;               // Shift to next city level reference database index
+                isNewLevel = true;                 // Enable entrance message tracking flags for the next stage
+            }
+            else {
+                std::cout << "\n[X] BARRIER LOCKED: You require " << activeCity.getSuppliesRequired()
+                    << " supplies to map out an exit trail out of " << activeCity.getName() << "!\n";
+            }
+        }
     }
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
