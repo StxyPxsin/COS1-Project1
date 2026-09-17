@@ -5,18 +5,18 @@
 class TextNarrator
 {
 public:
-	void printMainTitle()const;
-	
-	void printWelcomeMessage(const std::string& playerName) const;
-	
-	void printCityIntro(const CityLevel& level) const;
-	
-	void printCityVictory(const CityLevel& level) const;
-	
-	void printPlayerDashboard(const Player& player, const CityLevel& level) const;
-	
-	void printActionMenu(const std::string& playerName) const;
-	
-	void printGameOverScreen(bool hasWon, const std::string& playerName) const;
+    void printMainTitle() const;
+   
+    void printIntroSequence() const;
+   
+    void printCityIntro(const CityLevel& level) const;
+   
+    void printCityVictory(const CityLevel& level) const;
+    
+    void printPlayerDashboard(const Player& player, const CityLevel& level) const;
+   
+    void printMainMenu() const;
+   
+    void printGameOverScreen(bool hasWon, const std::string& playerName) const;
 };
 

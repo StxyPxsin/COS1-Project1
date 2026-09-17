@@ -1,31 +1,29 @@
 #pragma once
 #include <string>
 #include "CityLevel.h"
-class Player{
-
+class Player{    
 private:
-	std::string name;
-	int hp;
-	int maxHp;
-	int ammo;
-	int citySupplies;
-	
+        std::string name;
+        int hp;
+        int maxHp;
+        int ammo;
+        int citySupplies;
 
 public:
-	Player(std::string playerName);
-	std::string getName() const;
-	int getHp() const;
-	int getAmmo() const;
-	int getSupplies() const;
+        // Setup a player using whatever name they typed in
+        Player(std::string playerName);
 
-	void modifyHp(int amount);
-	void modifyAmmo(int amount);
-	void modifySupplies(int amount);
-	void resetSuppliesForNewCity();
+        // Getters to view player state pools securely
+        std::string getName() const;
+        int getHp() const;
+        int getAmmo() const;
+        int getSupplies() const;
 
-	void printStatus(const CityLevel& currentCity) const;
-
-
+        // Modifiers (Setters) to change our values safely without breaking rules
+        void modifyHp(int amount);
+        void modifyAmmo(int amount);
+        void modifySupplies(int amount);
+        void resetSuppliesForNewCity(); // Empties inventory for the next stage
 
 };
 
