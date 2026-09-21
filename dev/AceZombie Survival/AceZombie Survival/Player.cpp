@@ -2,7 +2,6 @@
 #include <iostream>
 #include <algorithm>
 
-
 Player::Player(std::string playerName) 
 	: name(playerName),hp(100), maxHp(100), ammo(6),citySupplies(1){}
 
