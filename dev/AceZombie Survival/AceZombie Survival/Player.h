@@ -1,14 +1,16 @@
 #pragma once
 #include <string>
 
+#pragma once
+#include <string>
+
 class Player {
 private:
     std::string name;
     int hp;
     int maxHp;
-    int highestUnlockedLevel; // Progress checkpoint tracking tracker
+    int highestUnlockedLevel;
 
-    // Core Tactical Combat Inventory Structure
     int ammo;
     int medkits;
     int machetes;
@@ -18,28 +20,18 @@ public:
     Player(std::string playerName);
 
     std::string getName() const;
-
     int getHp() const;
-
     int getHighestLevel() const;
-
     int getAmmo() const;
-
     int getMedkits() const;
-
     int getMachetes() const;
-
     int getRifles() const;
 
     void setHighestLevel(int levelIndex);
-
     void modifyHp(int amount);
-
     void modifyAmmo(int amount);
-
     void modifyMedkits(int amount);
-
     void modifyMachetes(int amount);
-
     void modifyRifles(int amount);
 };
+

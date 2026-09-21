@@ -1,10 +1,12 @@
 #include "TextNarrator.h"
+#include "Player.h"
+#include "CityLevel.h"
 #include <iostream>
 #include <vector>
 
 void TextNarrator::printMainTitle() const {
     std::cout << "*********************************************************\n";
-    std::cout << "               WELCOME TO ACEZOMBIES SECTOR ONE          \n";
+    std::cout << "               WELCOME TO ACEZOMBIES: SURVIVAL           \n";
     std::cout << "*********************************************************\n";
 }
 
@@ -31,16 +33,15 @@ void TextNarrator::printInventoryView(const Player& player) const {
     std::cout << " [Steel Machetes]     : " << player.getMachetes() << " Blades\n";
     std::cout << " [Tactical Assault]   : " << player.getRifles() << " Long Guns\n";
     std::cout << "---------------------------------------------------------\n";
-    std::cout << " Press any key choice number to return to Lobby...\n";
 }
 
-void TextNarrator::printLevelSelectionMenu(const std::vector<CityLevel>& levels, int highestUnlocked) const {
+void TextNarrator::printLevelSelectionMenu(const std::vector<CityLevel>& levels, int highestUnlockedLevel) const {
     std::cout << "\n=========================================================\n";
     std::cout << "            REGIONAL LEVEL COURIER MISSION SELECT         \n";
     std::cout << "=========================================================\n";
     for (size_t i = 0; i < levels.size(); ++i) {
         std::cout << " Level " << i + 1 << ": " << levels[i].getName();
-        if (static_cast<int>(i) <= highestUnlocked) {
+        if (static_cast<int>(i) <= highestUnlockedLevel) {
             std::cout << " [UNLOCKED] (Req: " << levels[i].getRequiredMachetes() << " Machetes, "
                 << levels[i].getRequiredRifles() << " Rifles)\n";
         }
@@ -95,4 +96,3 @@ void TextNarrator::printGameOverScreen(bool hasWon, const std::string& playerNam
     }
     std::cout << "=========================================================\n";
 }
-

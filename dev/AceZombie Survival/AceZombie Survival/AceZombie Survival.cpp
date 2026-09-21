@@ -7,7 +7,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <memory>
-#include <fstream> // Required for external file operations
+#include <fstream>
 #include "Player.h"
 #include "CityLevel.h"
 #include "TextNarrator.h"
@@ -44,7 +44,7 @@ void saveGameProgress(const Player& player) {
         std::cout << "\n[✓] Progress saved successfully to savegame.txt!\n";
     }
     else {
-        std::cout << "\n[X] Error: Could not write file link architecture data.\n";
+        std::cout << "\n[X] Error: Could not write save file framework data.\n";
     }
 }
 
@@ -72,9 +72,8 @@ int main() {
     std::srand(static_cast<unsigned int>(std::time(0)));
     TextNarrator narrator;
 
-    // 1. EXPANDED STAGES DATABASE LIST: 5 Levels with Scaling Difficulty Quotas
+    // INITIALIZE STAGES DATABASE REPOSITORY: 5 Levels with Scaling Difficulty Quotas
     std::vector<CityLevel> levels;
-    // Parameters: Name, Companion, Intro, Outro, Variant, Zombie HP, ReqMachetes, ReqRifles
     levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Highway cleared.", "Runner", 30, 1, 0));
     levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1));
     levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1));
@@ -92,13 +91,13 @@ int main() {
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
-    // 2.  PRE-GAME HUB MENU SYSTEM LOOP
+    // MAIN PRE-GAME HUB MENU SYSTEM LOOP
     while (systemLobbyRunning && player->getHp() > 0) {
         narrator.printPreGameMenu(player->getName());
         int lobbyChoice = getValidatedInput(1, 6);
 
         if (lobbyChoice == 1) {
-            // Option 1: Launch Active Survival Mission Run
+            // Launch Active Campaign Run
             activeLevelIndex = player->getHighestLevel();
             if (activeLevelIndex >= static_cast<int>(levels.size())) {
                 std::cout << "\n[★] All campaign regions cleared! Use level select to replay levels.\n";
@@ -108,7 +107,7 @@ int main() {
             bool playingFieldActive = true;
             bool triggerNewIntroText = true;
 
-            // 3. IN-FIELD CORE ACTIVE GAMEPLAY LOOP
+            // ACTIVE GAMEPLAY LOOP
             while (playingFieldActive && player->getHp() > 0) {
                 CityLevel& activeCity = levels[activeLevelIndex];
 
@@ -138,14 +137,14 @@ int main() {
                         std::cout << "[+] Discovered specialized deployment crates! Gained +5 Ammo & +1 Medkit.\n";
                     }
                     else {
-                        // Tactical Combat Sub-system Encounter vs. Aces
+                        // Tactical Combat Encounter
                         std::string zName = activeCity.getZombieVariant() + " Ace";
                         int activeZombieHp = activeCity.getBaseZombieHp() + (std::rand() % 20);
-                        std::cout << "[!] AMBUSH: A hostile " << zName << " (" << activeZombieHp << " HP) jumps out!\n";
+                        std::cout << "[!] AMBUSH: A hostile " << zName << " (" << activeZombieHp << " HP) lunges out!\n";
 
                         while (activeZombieHp > 0 && player->getHp() > 0) {
                             std::cout << " Combat Stance -> Ace HP: " << activeZombieHp << " | Your HP: " << player->getHp() << "%\n";
-                            std::cout << " 1. Shoot with Assault Rifle (-1 Ammo)\n 2. Slash with Machete\n Choose: ";
+                            std::cout << " 1. Shoot with Assault Rifle (-1 Ammo)\n 2. Slash with Machete\n Choose stance: ";
                             int fightChoice = getValidatedInput(1, 2);
 
                             if (fightChoice == 1) {
@@ -153,7 +152,7 @@ int main() {
                                     player->modifyAmmo(-1);
                                     int strike = 25 + (std::rand() % 15);
                                     activeZombieHp -= strike;
-                                    std::cout << " [*] Rifle hit blasts the Ace for " << strike << " damage!\n";
+                                    std::cout << " [*] Rifle shot blasts the Ace for " << strike << " damage!\n";
                                 }
                                 else {
                                     std::cout << " [X] Click! Out of ammo or rifle missing! Strike missed.\n";
@@ -168,7 +167,7 @@ int main() {
                             if (activeZombieHp > 0) {
                                 int incomingDmg = 8 + (std::rand() % 12);
                                 player->modifyHp(-incomingDmg);
-                                std::cout << " [X] The Ace bites back! Sustained -" << incomingDmg << "% health damage.\n";
+                                std::cout << " [X] The Ace bites back! Sustained -" << incomingDmg << "% damage.\n";
                             }
                         }
                         if (player->getHp() > 0) std::cout << "[✓] Hostile Ace eliminated.\n";
@@ -178,21 +177,20 @@ int main() {
                     if (player->getMedkits() > 0) {
                         player->modifyMedkits(-1);
                         player->modifyHp(45);
-                        std::cout << "\n[+] Handled emergency recovery treatment. Regenerated 45% HP.\n";
+                        std::cout << "\n[+] Handled medical recovery treatment. Regenerated 45% HP.\n";
                     }
                     else {
                         std::cout << "\n[X] Tactical medkits missing from inventory storage channels.\n";
                     }
                 }
                 else if (gameAction == 3) {
-                    // HARDER ESCAPE REQUIREMENTS VERIFICATION MATRIX
+                    // REQUIREMENT CHECKS TO CLEAR HARDER PROGRESSION GATES
                     if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
                         player->getRifles() >= activeCity.getRequiredRifles()) {
 
                         narrator.printCityVictory(activeCity);
                         playingFieldActive = false;
 
-                        // Advance historical unlocked marker tracking index registers
                         if (activeLevelIndex == player->getHighestLevel()) {
                             player->setHighestLevel(activeLevelIndex + 1);
                         }
@@ -207,14 +205,19 @@ int main() {
             }
         }
         else if (lobbyChoice == 2) {
-            // Option 2: Inspect Storage Locker Inventory
+            // Inspect Storage Locker Inventory - Clean exit configuration applied
             narrator.printInventoryView(*player);
-            getValidatedInput(0, 9); // Simple pause layer block until key selection returns to hub
+            std::cout << "Enter '1' to close inventory and return to HQ Lobby: ";
+            getValidatedInput(1, 1);
+        }
+        else if (lobbyChoice == 3) {
+            // Level Selection Matrix (Replay passed zones)
+            narrator.printLevelSelectionMenu(levels, player->getHighestLevel());
+            // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
+        // Debug program: F5 or Debug > Start Debugging menu
         }
     }
-        // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-        // Debug program: F5 or Debug > Start Debugging menu
-
+}
         // Tips for Getting Started: 
         //   1. Use the Solution Explorer window to add/manage files
         //   2. Use the Team Explorer window to connect to source control

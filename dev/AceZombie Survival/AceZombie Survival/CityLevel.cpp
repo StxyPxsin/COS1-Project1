@@ -6,34 +6,21 @@ CityLevel::CityLevel(std::string name, std::string survivor, std::string intro, 
     zombieVariant(zombieType), baseZombieHp(zombieHp), requiredMachetes(reqMachetes), requiredRifles(reqRifles) {
 }
 
-std::string CityLevel::getName() const 
-{ 
-    return cityName; }
 
-std::string CityLevel::getSurvivorName() const 
-{ 
-    return survivorName; }
+std::string CityLevel::getName() const { return cityName; }
 
-std::string CityLevel::getZombieVariant() const
-{
-    return zombieVariant; }
+std::string CityLevel::getSurvivorName() const { return survivorName; }
 
-int CityLevel::getBaseZombieHp() const 
-{ 
-    return baseZombieHp; }
 
-int CityLevel::getRequiredMachetes() const 
-{ 
-    return requiredMachetes; }
+std::string CityLevel::getZombieVariant() const { return zombieVariant; }
 
-int CityLevel::getRequiredRifles() const 
-{ 
-    return requiredRifles; }
+int CityLevel::getBaseZombieHp() const { return baseZombieHp; }
 
-std::string CityLevel::getIntroStory() const 
-{ 
-    return introStory; }
+int CityLevel::getRequiredMachetes() const { return requiredMachetes; }
 
-std::string CityLevel::getVictoryStory() const 
-{ 
-    return victoryStory; }
+int CityLevel::getRequiredRifles() const { return requiredRifles; }
+
+std::string CityLevel::getIntroStory() const { return introStory; }
+
+std::string CityLevel::getVictoryStory() const { return victoryStory; }
+
