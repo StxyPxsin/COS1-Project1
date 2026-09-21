@@ -1,29 +1,45 @@
 #pragma once
 #include <string>
-#include "CityLevel.h"
-class Player{    
+
+class Player {
 private:
-        std::string name;
-        int hp;
-        int maxHp;
-        int ammo;
-        int citySupplies;
+    std::string name;
+    int hp;
+    int maxHp;
+    int highestUnlockedLevel; // Progress checkpoint tracking tracker
+
+    // Core Tactical Combat Inventory Structure
+    int ammo;
+    int medkits;
+    int machetes;
+    int rifles;
 
 public:
-        // Setup a player using whatever name they typed in
-        Player(std::string playerName);
+    Player(std::string playerName);
 
-        // Getters to view player state pools securely
-        std::string getName() const;
-        int getHp() const;
-        int getAmmo() const;
-        int getSupplies() const;
+    std::string getName() const;
 
-        // Modifiers (Setters) to change our values safely without breaking rules
-        void modifyHp(int amount);
-        void modifyAmmo(int amount);
-        void modifySupplies(int amount);
-        void resetSuppliesForNewCity(); // Empties inventory for the next stage
+    int getHp() const;
 
+    int getHighestLevel() const;
+
+    int getAmmo() const;
+
+    int getMedkits() const;
+
+    int getMachetes() const;
+
+    int getRifles() const;
+
+    void setHighestLevel(int levelIndex);
+
+    void modifyHp(int amount);
+
+    void modifyAmmo(int amount);
+
+    void modifyMedkits(int amount);
+
+    void modifyMachetes(int amount);
+
+    void modifyRifles(int amount);
 };
-

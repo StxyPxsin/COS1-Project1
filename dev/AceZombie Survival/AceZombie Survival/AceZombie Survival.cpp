@@ -2,11 +2,12 @@
 //
 
 #include <iostream>
-#include <vector>     
+#include <vector>
 #include <string>
-#include <cstdlib>    
-#include <ctime>      
-#include <memory>     
+#include <cstdlib>
+#include <ctime>
+#include <memory>
+#include <fstream> // Required for external file operations
 #include "Player.h"
 #include "CityLevel.h"
 #include "TextNarrator.h"
@@ -17,19 +18,53 @@ int getValidatedInput(int min, int max) {
     int validatedNumber;
     while (true) {
         std::getline(std::cin, userInput);
-
         try {
-            size_t charactersProcessed = 0;
-            // Attempt conversion via string-to-integer library utility
-            validatedNumber = std::stoi(userInput, &charactersProcessed);
-
-            // Rejects trailing garbage text entries (e.g., typing "1abc" or "2 spaces")
-            if (charactersProcessed == userInput.length() && validatedNumber >= min && validatedNumber <= max) {
-                return validatedNumber; // Match confirmed, break filter loop
+            size_t processedChars = 0;
+            validatedNumber = std::stoi(userInput, &processedChars);
+            if (processedChars == userInput.length() && validatedNumber >= min && validatedNumber <= max) {
+                return validatedNumber;
             }
         }
+        catch (...) {}
+        std::cout << "[!] Invalid action. Input a valid value matching (" << min << "-" << max << "): ";
+    }
+}
+
+// PERSISTENT FSTREAM SAVE SYSTEM CORE FUNCTIONS
+void saveGameProgress(const Player& player) {
+    std::ofstream saveFile("savegame.txt");
+    if (saveFile.is_open()) {
+        saveFile << player.getHighestLevel() << "\n";
+        saveFile << player.getHp() << "\n";
+        saveFile << player.getAmmo() << "\n";
+        saveFile << player.getMedkits() << "\n";
+        saveFile << player.getMachetes() << "\n";
+        saveFile << player.getRifles() << "\n";
+        saveFile.close();
+        std::cout << "\n[✓] Progress saved successfully to savegame.txt!\n";
+    }
+    else {
+        std::cout << "\n[X] Error: Could not write file link architecture data.\n";
+    }
+}
+
+void loadGameProgress(Player& player) {
+    std::ifstream saveFile("savegame.txt");
+    if (saveFile.is_open()) {
+        int level, hp, ammo, medkits, machetes, rifles;
+        if (saveFile >> level >> hp >> ammo >> medkits >> machetes >> rifles) {
+            player.setHighestLevel(level);
+            player.modifyHp(hp - player.getHp());
+            player.modifyAmmo(ammo - player.getAmmo());
+            player.modifyMedkits(medkits - player.getMedkits());
+            player.modifyMachetes(machetes - player.getMachetes());
+            player.modifyRifles(rifles - player.getRifles());
+            std::cout << "\n[✓] Progress loaded successfully from savegame.txt!\n";
         }
-        std::cout << "[!] Invalid assignment option. Choose an option matching (" << min << "-" << max << "): ";
+        saveFile.close();
+    }
+    else {
+        std::cout << "\n[X] No save file found. Start playing to create one!\n";
     }
 }
 
@@ -37,116 +72,153 @@ int main() {
     std::srand(static_cast<unsigned int>(std::time(0)));
     TextNarrator narrator;
 
-    // 1. POPULATE STORY STAGE DATABASE ARRAYS
+    // 1. EXPANDED STAGES DATABASE LIST: 5 Levels with Scaling Difficulty Quotas
     std::vector<CityLevel> levels;
-    levels.push_back(CityLevel(
-        "Austin", "Marshal Davis",
-        "The concrete is baked hot in Austin. You crawl through a window into a radio tower.\nThere you meet Marshal Davis, a tech broadcasting loops for survivors.",
-        "Marshal Davis points his rifle out the window, clearing a path. 'Go, kid. I'll stay.'",
-        "Runner", 3
-    ));
-    levels.push_back(CityLevel(
-        "Chicago", "Dr. Helen Vance",
-        "The high-rises are freezing, and the wind scratches through broken windows.\nIn a lab, you meet Dr. Helen Vance, a scientist tracking viral patterns.",
-        "Dr. Vance packs her notes into your bag. 'The data is safe. Let's move.'",
-        "Armored Riot", 5
-    ));
-    levels.push_back(CityLevel(
-        "New York", "Captain Briggs",
-        "Times Square is a maze of rusted yellow cabs and glowing red eyes.\nOn top of a checkpoint, you meet Captain Briggs, holding down the line.",
-        "Captain Briggs blows the structural access bridges behind you. The mega-swarm falls. You made it.",
-        "Goliath Swarm Master", 7
-    ));
+    // Parameters: Name, Companion, Intro, Outro, Variant, Zombie HP, ReqMachetes, ReqRifles
+    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Highway cleared.", "Runner", 30, 1, 0));
+    levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1));
+    levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1));
+    levels.push_back(CityLevel("Denver", "Scout Miller", "Mountain pass blockades active.", "Tunnel charges blown.", "Frost Stalker", 80, 2, 2));
+    levels.push_back(CityLevel("New York", "Captain Briggs", "Times Square barricaded.", "Helipad reached.", "Goliath Swarm Master", 110, 3, 3));
 
     narrator.printMainTitle();
+    std::cout << "Enter Player Handle: ";
+    std::string pName;
+    std::getline(std::cin, pName);
+    if (pName.empty()) pName = "Operator_Ace";
 
-    std::cout << "Enter Name: ";
-    std::string chosenName;
-    std::getline(std::cin, chosenName);
-    if (chosenName.empty()) chosenName = "Hero"; // Backstop default configuration value
+    std::unique_ptr<Player> player = std::make_unique<Player>(pName);
 
-    // Allocate our Player object instance with their preferred custom structural profile
-    std::unique_ptr<Player> player = std::make_unique<Player>(chosenName);
-    narrator.printIntroSequence();
+    int activeLevelIndex = 0;
+    bool systemLobbyRunning = true;
 
-    int currentLevelIndex = 0;
-    bool isNewLevel = true;
-    bool playerWantsToExit = false;
+    // 2.  PRE-GAME HUB MENU SYSTEM LOOP
+    while (systemLobbyRunning && player->getHp() > 0) {
+        narrator.printPreGameMenu(player->getName());
+        int lobbyChoice = getValidatedInput(1, 6);
 
-    while (player->getHp() > 0 && currentLevelIndex < static_cast<int>(levels.size()) && !playerWantsToExit) {
-        CityLevel& activeCity = levels[currentLevelIndex]; // Pull active level details
-
-        // Trigger entrance storyline updates on level shifts
-        if (isNewLevel) {
-            narrator.printCityIntro(activeCity);
-            isNewLevel = false;
-        }
-
-        narrator.printPlayerDashboard(*player, activeCity);
-        narrator.printMainMenu();
-
-        int choice = getValidatedInput(1, 4); // Processes menu control configurations safely
-
-        if (choice == 1) {
-            // ACTION SELECTION 1: ACTION ENCOUNTER SCRIPTS PROMPTS
-            std::cout << "\nYou step out to scavenge sector blocks alongside " << activeCity.getSurvivorName() << "...\n";
-            int roll = std::rand() % 3; // Generates number 0, 1, or 2
-
-            if (roll == 0) {
-                int found = (std::rand() % 2) + 1;
-                player->modifySupplies(found);
-                std::cout << "[+] SUCCESS: Discovered emergency provisions! Gained " << found << " supply boxes.\n";
+        if (lobbyChoice == 1) {
+            // Option 1: Launch Active Survival Mission Run
+            activeLevelIndex = player->getHighestLevel();
+            if (activeLevelIndex >= static_cast<int>(levels.size())) {
+                std::cout << "\n[★] All campaign regions cleared! Use level select to replay levels.\n";
+                continue;
             }
-            }
-            else {
-                std::string fullZombieName = activeCity.getZombieVariant() + " Ace";
-                std::cout << "[!] AMBUSH: A pack of frantic " << fullZombieName << " zombies attacks your position!\n";
-                if (player->getAmmo() >= 3) {
-                    player->modifyAmmo(-3);
-                    int damage = (std::rand() % 15) + 5;
-                    player->modifyHp(-damage);
-                    std::cout << "[-] COMBAT: You burn 3 rounds downing the horde. Took " << damage << "% damage.\n";
+
+            bool playingFieldActive = true;
+            bool triggerNewIntroText = true;
+
+            // 3. IN-FIELD CORE ACTIVE GAMEPLAY LOOP
+            while (playingFieldActive && player->getHp() > 0) {
+                CityLevel& activeCity = levels[activeLevelIndex];
+
+                if (triggerNewIntroText) {
+                    narrator.printCityIntro(activeCity);
+                    triggerNewIntroText = false;
                 }
+
+                narrator.printPlayerDashboard(*player, activeCity);
+                narrator.printInGameMenu();
+                int gameAction = getValidatedInput(1, 3);
+
+                if (gameAction == 1) {
+                    std::cout << "\nSearching dark sector buildings with " << activeCity.getSurvivorName() << "...\n";
+                    int dropRoll = std::rand() % 4;
+                    if (dropRoll == 0) {
+                        player->modifyMachetes(1);
+                        std::cout << "[+] Found a sharp Steel Machete blade!\n";
+                    }
+                    else if (dropRoll == 1) {
+                        player->modifyRifles(1);
+                        std::cout << "[+] Found a functional Tactical Assault Rifle!\n";
+                    }
+                    else if (dropRoll == 2) {
+                        player->modifyAmmo(5);
+                        player->modifyMedkits(1);
+                        std::cout << "[+] Discovered specialized deployment crates! Gained +5 Ammo & +1 Medkit.\n";
+                    }
+                    else {
+                        // Tactical Combat Sub-system Encounter vs. Aces
+                        std::string zName = activeCity.getZombieVariant() + " Ace";
+                        int activeZombieHp = activeCity.getBaseZombieHp() + (std::rand() % 20);
+                        std::cout << "[!] AMBUSH: A hostile " << zName << " (" << activeZombieHp << " HP) jumps out!\n";
+
+                        while (activeZombieHp > 0 && player->getHp() > 0) {
+                            std::cout << " Combat Stance -> Ace HP: " << activeZombieHp << " | Your HP: " << player->getHp() << "%\n";
+                            std::cout << " 1. Shoot with Assault Rifle (-1 Ammo)\n 2. Slash with Machete\n Choose: ";
+                            int fightChoice = getValidatedInput(1, 2);
+
+                            if (fightChoice == 1) {
+                                if (player->getAmmo() > 0 && player->getRifles() > 0) {
+                                    player->modifyAmmo(-1);
+                                    int strike = 25 + (std::rand() % 15);
+                                    activeZombieHp -= strike;
+                                    std::cout << " [*] Rifle hit blasts the Ace for " << strike << " damage!\n";
+                                }
+                                else {
+                                    std::cout << " [X] Click! Out of ammo or rifle missing! Strike missed.\n";
+                                }
+                            }
+                            else {
+                                int strike = 12 + (std::rand() % 8);
+                                activeZombieHp -= strike;
+                                std::cout << " [*] Blade slash slices the Ace for " << strike << " damage.\n";
+                            }
+
+                            if (activeZombieHp > 0) {
+                                int incomingDmg = 8 + (std::rand() % 12);
+                                player->modifyHp(-incomingDmg);
+                                std::cout << " [X] The Ace bites back! Sustained -" << incomingDmg << "% health damage.\n";
+                            }
+                        }
+                        if (player->getHp() > 0) std::cout << "[✓] Hostile Ace eliminated.\n";
+                    }
+                }
+                else if (gameAction == 2) {
+                    if (player->getMedkits() > 0) {
+                        player->modifyMedkits(-1);
+                        player->modifyHp(45);
+                        std::cout << "\n[+] Handled emergency recovery treatment. Regenerated 45% HP.\n";
+                    }
+                    else {
+                        std::cout << "\n[X] Tactical medkits missing from inventory storage channels.\n";
+                    }
+                }
+                else if (gameAction == 3) {
+                    // HARDER ESCAPE REQUIREMENTS VERIFICATION MATRIX
+                    if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
+                        player->getRifles() >= activeCity.getRequiredRifles()) {
+
+                        narrator.printCityVictory(activeCity);
+                        playingFieldActive = false;
+
+                        // Advance historical unlocked marker tracking index registers
+                        if (activeLevelIndex == player->getHighestLevel()) {
+                            player->setHighestLevel(activeLevelIndex + 1);
+                        }
+                    }
+                    else {
+                        std::cout << "\n[X] INSUFFICIENT HARDWARE TO ESCAPE SECTOR!\n";
+                        std::cout << " To secure a path out of here you still require:\n";
+                        std::cout << " * " << activeCity.getRequiredMachetes() << " Machetes (You have: " << player->getMachetes() << ")\n";
+                        std::cout << " * " << activeCity.getRequiredRifles() << " Rifles (You have: " << player->getRifles() << ")\n";
+                    }
                 }
             }
         }
-        else if (choice == 2) {
-            // ACTION SELECTION 2: RESOURCE AND POOLS MODIFICATION RECOVERY LINES
-            if (player->getSupplies() > 0) {
-                player->modifySupplies(-1);
-                player->modifyHp(30);
-                std::cout << "\n[+] You consume a supply box and patch up your structural injuries. Restored 30% HP!\n";
-            }
-            else {
-                std::cout << "\n[X] Action failed. You possess zero emergency supplies inside your bag.\n";
-            }
-        }
-        else if (choice == 3) {
-            // ACTION SELECTION 3: SECTOR THRESHOLD EVALUATIONS AND PROGRESSION INCREMENTORS
-            if (player->getSupplies() >= activeCity.getSuppliesRequired()) {
-                narrator.printCityVictory(activeCity);
-                player->resetSuppliesForNewCity(); // Clear current inventory pools
-                currentLevelIndex++;               // Shift to next city level reference database index
-                isNewLevel = true;                 // Enable entrance message tracking flags for the next stage
-            }
-            else {
-                std::cout << "\n[X] BARRIER LOCKED: You require " << activeCity.getSuppliesRequired()
-                    << " supplies to map out an exit trail out of " << activeCity.getName() << "!\n";
-            }
-        }
+        else if (lobbyChoice == 2) {
+            // Option 2: Inspect Storage Locker Inventory
+            narrator.printInventoryView(*player);
+            getValidatedInput(0, 9); // Simple pause layer block until key selection returns to hub
         }
     }
-    else {
-        std::cout << "Program exited intentionally. Goodbye.\n";
-    }
-}
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
+        // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
+        // Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+        // Tips for Getting Started: 
+        //   1. Use the Solution Explorer window to add/manage files
+        //   2. Use the Team Explorer window to connect to source control
+        //   3. Use the Output window to see build output and other messages
+        //   4. Use the Error List window to view errors
+        //   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
+        //   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
