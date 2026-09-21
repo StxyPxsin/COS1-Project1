@@ -13,7 +13,6 @@ public:
     //Constructor
     CityLevel(std::string name, std::string survivor, std::string intro, std::string victory, std::string zombieType, int reqSupplies);
 
-    //Getters
     std::string getName() const;
     std::string getSurvivorName() const;
     std::string getZombieVariant() const;

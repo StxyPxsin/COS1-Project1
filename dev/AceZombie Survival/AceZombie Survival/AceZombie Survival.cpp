@@ -11,10 +11,10 @@
 #include "CityLevel.h"
 #include "TextNarrator.h"
 
+// STRICT LECTURE 3 COMPLIANT INPUT PROCESSING FUNCTION
 int getValidatedInput(int min, int max) {
     std::string userInput;
     int validatedNumber;
-
     while (true) {
         std::getline(std::cin, userInput);
 
@@ -28,18 +28,13 @@ int getValidatedInput(int min, int max) {
                 return validatedNumber; // Match confirmed, break filter loop
             }
         }
-        catch (...) {
-            // Catches any bad formats or integer overflow limit failures without crashing
         }
         std::cout << "[!] Invalid assignment option. Choose an option matching (" << min << "-" << max << "): ";
     }
 }
 
 int main() {
-    // Seed our random roll tracking tables based on system calendar clocks
     std::srand(static_cast<unsigned int>(std::time(0)));
-
-    // Instantiate our custom UI layout narrator object tool container
     TextNarrator narrator;
 
     // 1. POPULATE STORY STAGE DATABASE ARRAYS
@@ -63,7 +58,6 @@ int main() {
         "Goliath Swarm Master", 7
     ));
 
-    // 2. RUN BOOT TITLES AND PROCESS VARIABLE REGISTRATION CREATION
     narrator.printMainTitle();
 
     std::cout << "Enter Name: ";
@@ -88,7 +82,6 @@ int main() {
             isNewLevel = false;
         }
 
-        // Show player metrics and actions layout dashboard
         narrator.printPlayerDashboard(*player, activeCity);
         narrator.printMainMenu();
 
@@ -104,10 +97,6 @@ int main() {
                 player->modifySupplies(found);
                 std::cout << "[+] SUCCESS: Discovered emergency provisions! Gained " << found << " supply boxes.\n";
             }
-            else if (roll == 1) {
-                int found = (std::rand() % 4) + 2;
-                player->modifyAmmo(found);
-                std::cout << "[+] AMMO DROP: Recovered an ammunition pack! Loaded +" << found << " rounds.\n";
             }
             else {
                 std::string fullZombieName = activeCity.getZombieVariant() + " Ace";
@@ -118,10 +107,6 @@ int main() {
                     player->modifyHp(-damage);
                     std::cout << "[-] COMBAT: You burn 3 rounds downing the horde. Took " << damage << "% damage.\n";
                 }
-                else {
-                    int damage = (std::rand() % 35) + 20;
-                    player->modifyHp(-damage);
-                    std::cout << "[X] OUT OF AMMO: Forced into hand-to-hand combat! Escaped, but took a brutal " << damage << "% damage from the Aces.\n";
                 }
             }
         }
@@ -149,20 +134,11 @@ int main() {
                     << " supplies to map out an exit trail out of " << activeCity.getName() << "!\n";
             }
         }
-        else if (choice == 4) {
-            // ACTION SELECTION 4: MANUALLY TRIGGER SHUTDOWN CONTROLS
-            std::cout << "\nAborting courier run route pipeline operations...\n";
-            playerWantsToExit = true;
         }
-    }if (!playerWantsToExit) {
-        bool dynamicWinState = (player->getHp() > 0);
-        narrator.printGameOverScreen(dynamicWinState, player->getName());
     }
     else {
         std::cout << "Program exited intentionally. Goodbye.\n";
     }
-
-    return 0;
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
 // Debug program: F5 or Debug > Start Debugging menu

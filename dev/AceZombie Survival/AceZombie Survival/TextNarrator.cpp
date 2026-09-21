@@ -1,10 +1,6 @@
 #include "TextNarrator.h"
 #include <iostream>
 
-#include "TextNarrator.h"
-#include <iostream>
-
-// Outputs the main application header banner card
 void TextNarrator::printMainTitle() const {
     std::cout << "*********************************************************\n";
     std::cout << "               WELCOME TO ACEZOMBIES!!!!!                \n";
@@ -18,7 +14,6 @@ void TextNarrator::printIntroSequence() const {
     std::cout << "You are a courier hauling the structural viral cure code through infected cities.\n";
 }
 
-// Prints narrative contextual introduction lines when a level changes
 void TextNarrator::printCityIntro(const CityLevel& level) const {
     std::cout << "\n=========================================================\n";
     std::cout << " ARRIVING IN LEVEL: " << level.getName() << "\n";
@@ -27,15 +22,12 @@ void TextNarrator::printCityIntro(const CityLevel& level) const {
     std::cout << "Local Threat Multiplier: " << level.getZombieVariant() << " Aces\n";
 }
 
-// Prints thematic story text upon level completion
 void TextNarrator::printCityVictory(const CityLevel& level) const {
     std::cout << "\n---------------------------------------------------------\n";
     std::cout << "[>>>] SUCCESS! ESCAPING " << level.getName() << "...\n";
     std::cout << level.getVictoryStory() << "\n";
-    std::cout << "---------------------------------------------------------\n";
 }
 
-// Renders the scannable resources metrics monitor
 void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& level) const {
     std::cout << "\n---------------------------------------------------------\n";
     std::cout << "CITY: " << level.getName() << " | LOCAL COMPANION: " << level.getSurvivorName() << "\n";
@@ -53,7 +45,6 @@ void TextNarrator::printMainMenu() const {
     std::cout << "Choose action (1-4): ";
 }
 
-// Renders final run results and summary messages
 void TextNarrator::printGameOverScreen(bool hasWon, const std::string& playerName) const {
     std::cout << "\n=========================================================\n";
     if (hasWon) {

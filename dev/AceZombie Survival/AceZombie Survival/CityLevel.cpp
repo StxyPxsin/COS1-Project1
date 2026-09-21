@@ -1,5 +1,4 @@
 #include "CityLevel.h"
-#include <iostream>
 
 //Assigns incoming parameters to the private member variables
 CityLevel::CityLevel(std::string name, std::string survivor, std::string intro, std::string victory, std::string zombieType, int reqSupplies)
