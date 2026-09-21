@@ -149,6 +149,11 @@ int main() {
                     << " supplies to map out an exit trail out of " << activeCity.getName() << "!\n";
             }
         }
+        else if (choice == 4) {
+            // ACTION SELECTION 4: MANUALLY TRIGGER SHUTDOWN CONTROLS
+            std::cout << "\nAborting courier run route pipeline operations...\n";
+            playerWantsToExit = true;
+        }
     }
 }
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
