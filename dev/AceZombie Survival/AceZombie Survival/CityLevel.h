@@ -1,23 +1,28 @@
 #pragma once
 #include <string>
-class CityLevel
-{
+
+class CityLevel {
 private:
     std::string cityName;
     std::string survivorName;
     std::string introStory;
     std::string victoryStory;
     std::string zombieVariant;
-    int suppliesRequired;
-public:
-    //Constructor
-    CityLevel(std::string name, std::string survivor, std::string intro, std::string victory, std::string zombieType, int reqSupplies);
+    int baseZombieHp;
+    int requiredMachetes;
+    int requiredRifles;
 
-    //Getters
+public:
+    CityLevel(std::string name, std::string survivor, std::string intro, std::string victory,
+        std::string zombieType, int zombieHp, int reqMachetes, int reqRifles);
+
     std::string getName() const;
     std::string getSurvivorName() const;
     std::string getZombieVariant() const;
-    int getSuppliesRequired() const;
+    int getBaseZombieHp() const;
+    int getRequiredMachetes() const;
+    int getRequiredRifles() const;
     std::string getIntroStory() const;
     std::string getVictoryStory() const;
 };
+
