@@ -11,6 +11,7 @@
 #include "CityLevel.h"
 #include "TextNarrator.h"
 
+// STRICT LECTURE 3 COMPLIANT INPUT PROCESSING FUNCTION
 int getValidatedInput(int min, int max) {
     std::string userInput;
     int validatedNumber;
@@ -24,10 +25,13 @@ int getValidatedInput(int min, int max) {
             }
         }
         catch (...) {}
-        std::cout << "[!] Invalid action. Input a valid value matching (" << min << "-" << max << "): ";
+        std::cout << "\n[!] SYSTEM WARNING: Unrecognized operational command detected.\n";
+        std::cout << "Typing letters, symbols, or picking a blank line is invalid.\n";
+        std::cout << "Type a number between " << min << " and " << max << " and press Enter: ";
     }
 }
 
+// PERSISTENT FSTREAM SAVE SYSTEM CORE FUNCTIONS
 void saveGameProgress(const Player& player) {
     std::ofstream saveFile("savegame.txt");
     if (saveFile.is_open()) {
@@ -37,12 +41,12 @@ void saveGameProgress(const Player& player) {
         saveFile << player.getMedkits() << "\n";
         saveFile << player.getMachetes() << "\n";
         saveFile << player.getRifles() << "\n";
-        saveFile << player.getBoltCutters() << "\n"; // [NEW ROW SAVED]
+        saveFile << player.getBoltCutters() << "\n";
         saveFile.close();
         std::cout << "\n[✓] Progress saved successfully to savegame.txt!\n";
     }
     else {
-        std::cout << "\n[X] Error: Could not write save file framework data.\n";
+        std::cout << "\n[X] Error: Could not write save file framework data to system disk.\n";
     }
 }
 
@@ -57,13 +61,14 @@ void loadGameProgress(Player& player) {
             player.modifyMedkits(medkits - player.getMedkits());
             player.modifyMachetes(machetes - player.getMachetes());
             player.modifyRifles(rifles - player.getRifles());
-            player.modifyBoltCutters(boltCutters - player.getBoltCutters()); // [NEW ROW LOADED]
+            player.modifyBoltCutters(boltCutters - player.getBoltCutters());
             std::cout << "\n[✓] Progress loaded successfully from savegame.txt!\n";
         }
         saveFile.close();
     }
     else {
-        std::cout << "\n[X] No save file found. Start playing to create one!\n";
+        std::cout << "\n[X] UPLINK FAILURE: No local progress file discovered on this terminal disk.\n";
+        std::cout << "You cannot restore data until you launch a fresh mission and make a backup using Option 5.\n";
     }
 }
 
@@ -72,9 +77,8 @@ int main() {
     TextNarrator narrator;
 
     // INITIALIZE STAGES DATABASE REPOSITORY: 5 Levels with Scaling Difficulty Quotas
-    // [UPDATED RULES]: Parameters match name, companion, stories, variant, zombieHp, reqMachetes, reqRifles, reqBoltCutters
     std::vector<CityLevel> levels;
-    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin chain blockades cut! Highway cleared.", "Runner", 30, 1, 0, 1)); // <-- [AUSTIN REQ CHANGES]
+    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin secured! Highway cleared.", "Runner", 30, 1, 0, 1));
     levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1, 0));
     levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1, 0));
     levels.push_back(CityLevel("Denver", "Scout Miller", "Mountain pass blockades active.", "Tunnel charges blown.", "Frost Stalker", 80, 2, 2, 1));
@@ -91,20 +95,24 @@ int main() {
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
+    // MAIN PRE-GAME HUB MENU SYSTEM LOOP
     while (systemLobbyRunning && player->getHp() > 0) {
         narrator.printPreGameMenu(player->getName());
         int lobbyChoice = getValidatedInput(1, 6);
 
         if (lobbyChoice == 1) {
+            // Launch Active Campaign Run
             activeLevelIndex = player->getHighestLevel();
             if (activeLevelIndex >= static_cast<int>(levels.size())) {
-                std::cout << "\n[★] All campaign regions cleared! Use level select to replay levels.\n";
+                std::cout << "\n[X] DEPLOYMENT DENIED: All regional sectors have been completely purged and secured.\n";
+                std::cout << "The continental courier route is already 100% complete!\n";
                 continue;
             }
 
             bool playingFieldActive = true;
             bool triggerNewIntroText = true;
 
+            // ACTIVE IN-FIELD MISSION LOOP
             while (playingFieldActive && player->getHp() > 0) {
                 CityLevel& activeCity = levels[activeLevelIndex];
 
@@ -119,7 +127,7 @@ int main() {
 
                 if (gameAction == 1) {
                     std::cout << "\nSearching dark sector buildings with " << activeCity.getSurvivorName() << "...\n";
-                    int dropRoll = std::rand() % 5; // [UPDATED LOOT TABLE MATRIX TO 5 ROWS]
+                    int dropRoll = std::rand() % 5;
                     if (dropRoll == 0) {
                         player->modifyMachetes(1);
                         std::cout << "[+] Found a sharp Steel Machete blade!\n";
@@ -129,7 +137,7 @@ int main() {
                         std::cout << "[+] Found a functional Tactical Assault Rifle!\n";
                     }
                     else if (dropRoll == 2) {
-                        player->modifyBoltCutters(1); // [NEW SCAVENGE ITEM DROP]
+                        player->modifyBoltCutters(1);
                         std::cout << "[+] Discovered heavy-duty Bolt Cutters embedded in an old utility grid!\n";
                     }
                     else if (dropRoll == 3) {
@@ -156,7 +164,8 @@ int main() {
                                     std::cout << " [*] Rifle shot blasts the Ace for " << strike << " damage!\n";
                                 }
                                 else {
-                                    std::cout << " [X] Click! Out of ammo or rifle missing! Strike missed.\n";
+                                    std::cout << "\n[X] WEAPON FAILURE: Click! You pull the trigger, but nothing happens.\n";
+                                    std::cout << "You either do not own an Assault Rifle yet, or your magazines are completely empty!\n";
                                 }
                             }
                             else {
@@ -181,31 +190,20 @@ int main() {
                         std::cout << "\n[+] Handled medical recovery treatment. Regenerated 45% HP.\n";
                     }
                     else {
-                        std::cout << "\n[X] Tactical medkits missing from inventory storage channels.\n";
+                        std::cout << "\n[X] MEDICAL FAILURE: You tear open your supply pack, but your trauma pockets are empty.\n";
+                        std::cout << "No medical gear items remain in your storage channels.\n";
                     }
                 }
                 else if (gameAction == 3) {
                     // REQUIREMENT CHECKS TO CLEAR HARDER PROGRESSION GATES WITH FIXED DYNAMIC TEXT
                     if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
                         player->getRifles() >= activeCity.getRequiredRifles() &&
-                        player->getBoltCutters() >= activeCity.getRequiredBoltCutters()) { // [NEW ADAPTED GATE CONDITIONAL ITEM CHECK]
-
-                        // Deduct all required inventory items to clear out blockades completely
-                        player->modifyMachetes(-activeCity.getRequiredMachetes());
-                        player->modifyRifles(-activeCity.getRequiredRifles());
-                        player->modifyBoltCutters(-activeCity.getRequiredBoltCutters()); // [CONSUMPTION APPLIED]
-
-                        narrator.printCityVictory(activeCity);
-                        playingFieldActive = false;
-
-                        if (activeLevelIndex == player->getHighestLevel()) {
-                            player->setHighestLevel(activeLevelIndex + 1);
-                        }
-                    }
-                    else {
+                        player->getBoltCutters() >= activeCity.getRequiredBoltCutters()) {
                     }
                 }
             }
+                        // Deduct all required inventory items to clear out blockades completely
+
         }
     }
 }

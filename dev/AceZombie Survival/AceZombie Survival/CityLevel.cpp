@@ -12,7 +12,6 @@ std::string CityLevel::getZombieVariant() const { return zombieVariant; }
 int CityLevel::getBaseZombieHp() const { return baseZombieHp; }
 int CityLevel::getRequiredMachetes() const { return requiredMachetes; }
 int CityLevel::getRequiredRifles() const { return requiredRifles; }
-int CityLevel::getRequiredBoltCutters() const { return requiredBoltCutters; } // [NEW]
+int CityLevel::getRequiredBoltCutters() const { return requiredBoltCutters; }
 std::string CityLevel::getIntroStory() const { return introStory; }
 std::string CityLevel::getVictoryStory() const { return victoryStory; }
-

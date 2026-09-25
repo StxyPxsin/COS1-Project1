@@ -32,7 +32,7 @@ void TextNarrator::printInventoryView(const Player& player) const {
     std::cout << " [Field Trauma Kits]  : " << player.getMedkits() << " Packs\n";
     std::cout << " [Steel Machetes]     : " << player.getMachetes() << " Blades\n";
     std::cout << " [Tactical Assault]   : " << player.getRifles() << " Long Guns\n";
-    std::cout << " [Heavy Bolt Cutters] : " << player.getBoltCutters() << " Tools\n"; // [NEW ROW]
+    std::cout << " [Heavy Bolt Cutters] : " << player.getBoltCutters() << " Tools\n";
     std::cout << "---------------------------------------------------------\n";
 }
 
@@ -48,7 +48,7 @@ void TextNarrator::printLevelSelectionMenu(const std::vector<CityLevel>& levels,
                 << levels[i].getRequiredBoltCutters() << " Bolt Cutters)\n";
         }
         else {
-            std::cout << " [LOCKED - Complete previous zones to clear pathway]\n";
+            std::cout << " [LOCKED]\n";
         }
     }
     std::cout << " Choose a level or input 0 to cancel: ";
@@ -73,7 +73,7 @@ void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& l
     std::cout << " INVENTORY -> HP: " << player.getHp() << "% | Ammo: " << player.getAmmo()
         << " | Machetes: " << player.getMachetes() << "/" << level.getRequiredMachetes()
         << " | Rifles: " << player.getRifles() << "/" << level.getRequiredRifles()
-        << " | Bolt Cutters: " << player.getBoltCutters() << "/" << level.getRequiredBoltCutters() << "\n"; // [UPDATED DASHBOARD]
+        << " | Bolt Cutters: " << player.getBoltCutters() << "/" << level.getRequiredBoltCutters() << "\n";
     std::cout << "---------------------------------------------------------\n";
 }
 

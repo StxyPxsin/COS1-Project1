@@ -1,11 +1,12 @@
 #pragma once
-#pragma once
 #include <string>
 #include <vector>
 
+// Forward Declarations to completely eliminate file compilation dependency loops
 class Player;
 class CityLevel;
 
+// This class handles all UI output formatting, borders, and storytelling prompts.
 class TextNarrator {
 public:
     void printMainTitle() const;
@@ -18,6 +19,4 @@ public:
     void printInGameMenu() const;
     void printGameOverScreen(bool hasWon, const std::string& playerName) const;
 };
-
-
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+// This class represents a single level/city data profile structure.
 class CityLevel {
 private:
     std::string cityName;
@@ -10,10 +11,10 @@ private:
     std::string zombieVariant;
     int baseZombieHp;
 
-    // Harder Item Quotas: Required to clear the level gates
+    // Scaling Progression: Harder item quotas required to pass the level
     int requiredMachetes;
     int requiredRifles;
-    int requiredBoltCutters; // [NEW FIELD]
+    int requiredBoltCutters;
 
 public:
     CityLevel(std::string name, std::string survivor, std::string intro, std::string victory,
@@ -25,7 +26,7 @@ public:
     int getBaseZombieHp() const;
     int getRequiredMachetes() const;
     int getRequiredRifles() const;
-    int getRequiredBoltCutters() const; // [NEW GETTER]
+    int getRequiredBoltCutters() const;
     std::string getIntroStory() const;
     std::string getVictoryStory() const;
 };
