@@ -11,7 +11,7 @@
 #include "CityLevel.h"
 #include "TextNarrator.h"
 
-// STRICT LECTURE 3 COMPLIANT INPUT PROCESSING FUNCTION
+// INPUT VALIDATION METHOD
 int getValidatedInput(int min, int max) {
     std::string userInput;
     int validatedNumber;
@@ -25,13 +25,11 @@ int getValidatedInput(int min, int max) {
             }
         }
         catch (...) {}
-        std::cout << "\n[!] SYSTEM WARNING: Unrecognized operational command detected.\n";
-        std::cout << "Typing letters, symbols, or picking a blank line is invalid.\n";
-        std::cout << "Type a number between " << min << " and " << max << " and press Enter: ";
+        std::cout << "\n[!] SYSTEM WARNING: Unrecognized command. Choose a valid menu index (" << min << "-" << max << "): ";
     }
 }
 
-// PERSISTENT FSTREAM SAVE SYSTEM CORE FUNCTIONS
+// PERSISTENT PROGRESS REPOSITORIES
 void saveGameProgress(const Player& player) {
     std::ofstream saveFile("savegame.txt");
     if (saveFile.is_open()) {
@@ -68,17 +66,53 @@ void loadGameProgress(Player& player) {
     }
     else {
         std::cout << "\n[X] UPLINK FAILURE: No local progress file discovered on this terminal disk.\n";
-        std::cout << "You cannot restore data until you launch a fresh mission and make a backup using Option 5.\n";
     }
+}
+
+// COMBAT SIMULATION HANDLER ENCAPSULATION SUBROUTINE
+void executeCombatScenario(Player& playerInstance, const CityLevel& targetCity) {
+    std::string zName = targetCity.getZombieVariant() + " Ace";
+    int activeZombieHp = targetCity.getBaseZombieHp() + (std::rand() % 20);
+    std::cout << "\n[!!!] AMBUSH: An aggressive, snarling " << zName << " (" << activeZombieHp << " HP) lunges forward!\n";
+
+    while (activeZombieHp > 0 && playerInstance.getHp() > 0) {
+        std::cout << " Combat Stance -> Ace HP: " << activeZombieHp << " | Your HP: " << playerInstance.getHp() << "%\n";
+        std::cout << " 1. Shoot with Assault Rifle (-1 Ammo)\n 2. Slash with Machete\n Choose stance: ";
+        int fightChoice = getValidatedInput(1, 2);
+
+        if (fightChoice == 1) {
+            if (playerInstance.getAmmo() > 0 && playerInstance.getRifles() > 0) {
+                playerInstance.getAmmo();
+                playerInstance.modifyAmmo(-1);
+                int strike = 25 + (std::rand() % 15);
+                activeZombieHp -= strike;
+                std::cout << " [*] Rifle shot blasts the Ace for " << strike << " damage!\n";
+            }
+            else {
+                std::cout << "\n[X] WEAPON FAILURE: Click! You lack a Rifle or have zero Ammo remaining!\n";
+            }
+        }
+        else {
+            int strike = 12 + (std::rand() % 8);
+            activeZombieHp -= strike;
+            std::cout << " [*] Blade slash slices the Ace for " << strike << " damage.\n";
+        }
+
+        if (activeZombieHp > 0) {
+            int incomingDmg = 8 + (std::rand() % 12);
+            playerInstance.modifyHp(-incomingDmg);
+            std::cout << " [X] The Ace strikes back! Sustained -" << incomingDmg << "% damage.\n";
+        }
+    }
+    if (playerInstance.getHp() > 0) std::cout << "[✓] Hostile Ace eliminated successfully.\n";
 }
 
 int main() {
     std::srand(static_cast<unsigned int>(std::time(0)));
     TextNarrator narrator;
 
-    // INITIALIZE STAGES DATABASE REPOSITORY: 5 Levels with Scaling Difficulty Quotas
     std::vector<CityLevel> levels;
-    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin secured! Highway cleared.", "Runner", 30, 1, 0, 1));
+    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin chain blockades cut! Highway cleared.", "Runner", 30, 1, 0, 1));
     levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1, 0));
     levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1, 0));
     levels.push_back(CityLevel("Denver", "Scout Miller", "Mountain pass blockades active.", "Tunnel charges blown.", "Frost Stalker", 80, 2, 2, 1));
@@ -95,24 +129,20 @@ int main() {
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
-    // MAIN PRE-GAME HUB MENU SYSTEM LOOP
     while (systemLobbyRunning && player->getHp() > 0) {
         narrator.printPreGameMenu(player->getName());
         int lobbyChoice = getValidatedInput(1, 6);
 
         if (lobbyChoice == 1) {
-            // Launch Active Campaign Run
             activeLevelIndex = player->getHighestLevel();
             if (activeLevelIndex >= static_cast<int>(levels.size())) {
-                std::cout << "\n[X] DEPLOYMENT DENIED: All regional sectors have been completely purged and secured.\n";
-                std::cout << "The continental courier route is already 100% complete!\n";
+                std::cout << "\n[X] DEPLOYMENT DENIED: All regional campaign sectors are cleared!\n";
                 continue;
             }
 
             bool playingFieldActive = true;
             bool triggerNewIntroText = true;
 
-            // ACTIVE IN-FIELD MISSION LOOP
             while (playingFieldActive && player->getHp() > 0) {
                 CityLevel& activeCity = levels[activeLevelIndex];
 
@@ -128,6 +158,7 @@ int main() {
                 if (gameAction == 1) {
                     std::cout << "\nSearching dark sector buildings with " << activeCity.getSurvivorName() << "...\n";
                     int dropRoll = std::rand() % 5;
+
                     if (dropRoll == 0) {
                         player->modifyMachetes(1);
                         std::cout << "[+] Found a sharp Steel Machete blade!\n";
@@ -146,41 +177,8 @@ int main() {
                         std::cout << "[+] Discovered specialized deployment crates! Gained +5 Ammo & +1 Medkit.\n";
                     }
                     else {
-                        // Tactical Combat Encounter
-                        std::string zName = activeCity.getZombieVariant() + " Ace";
-                        int activeZombieHp = activeCity.getBaseZombieHp() + (std::rand() % 20);
-                        std::cout << "[!] AMBUSH: A hostile " << zName << " (" << activeZombieHp << " HP) lunges out!\n";
-
-                        while (activeZombieHp > 0 && player->getHp() > 0) {
-                            std::cout << " Combat Stance -> Ace HP: " << activeZombieHp << " | Your HP: " << player->getHp() << "%\n";
-                            std::cout << " 1. Shoot with Assault Rifle (-1 Ammo)\n 2. Slash with Machete\n Choose stance: ";
-                            int fightChoice = getValidatedInput(1, 2);
-
-                            if (fightChoice == 1) {
-                                if (player->getAmmo() > 0 && player->getRifles() > 0) {
-                                    player->modifyAmmo(-1);
-                                    int strike = 25 + (std::rand() % 15);
-                                    activeZombieHp -= strike;
-                                    std::cout << " [*] Rifle shot blasts the Ace for " << strike << " damage!\n";
-                                }
-                                else {
-                                    std::cout << "\n[X] WEAPON FAILURE: Click! You pull the trigger, but nothing happens.\n";
-                                    std::cout << "You either do not own an Assault Rifle yet, or your magazines are completely empty!\n";
-                                }
-                            }
-                            else {
-                                int strike = 12 + (std::rand() % 8);
-                                activeZombieHp -= strike;
-                                std::cout << " [*] Blade slash slices the Ace for " << strike << " damage.\n";
-                            }
-
-                            if (activeZombieHp > 0) {
-                                int incomingDmg = 8 + (std::rand() % 12);
-                                player->modifyHp(-incomingDmg);
-                                std::cout << " [X] The Ace bites back! Sustained -" << incomingDmg << "% damage.\n";
-                            }
-                        }
-                        if (player->getHp() > 0) std::cout << "[✓] Hostile Ace eliminated.\n";
+                        // Regular scavenging zombie encounter
+                        executeCombatScenario(*player, activeCity);
                     }
                 }
                 else if (gameAction == 2) {
@@ -190,20 +188,36 @@ int main() {
                         std::cout << "\n[+] Handled medical recovery treatment. Regenerated 45% HP.\n";
                     }
                     else {
-                        std::cout << "\n[X] MEDICAL FAILURE: You tear open your supply pack, but your trauma pockets are empty.\n";
-                        std::cout << "No medical gear items remain in your storage channels.\n";
+                        std::cout << "\n[X] MEDICAL FAILURE: Your trauma pockets are completely empty!\n";
                     }
                 }
                 else if (gameAction == 3) {
-                    // REQUIREMENT CHECKS TO CLEAR HARDER PROGRESSION GATES WITH FIXED DYNAMIC TEXT
+                    // ATTACK ENCOUNTER CHECK UPON LEAVING TOO SOON
                     if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
                         player->getRifles() >= activeCity.getRequiredRifles() &&
                         player->getBoltCutters() >= activeCity.getRequiredBoltCutters()) {
+
+                        player->modifyMachetes(-activeCity.getRequiredMachetes());
+                        player->modifyRifles(-activeCity.getRequiredRifles());
+                        player->modifyBoltCutters(-activeCity.getRequiredBoltCutters());
+
+                        narrator.printCityVictory(activeCity);
+                        playingFieldActive = false;
+
+                        if (activeLevelIndex == player->getHighestLevel()) {
+                            player->setHighestLevel(activeLevelIndex + 1);
+                        }
+                    }
+                    else {
+                        // IMMERSIVE ERROR RESPONSE BY LEVEL MIXTURE SPECIFICATION EXCLUSIVENESS
+                        std::cout << "\n=========================================================================\n";
+                        std::cout << "[X] EXTRACTION DENIED: The checkpoint perimeter line out of " << activeCity.getName() << " is completely locked down!\n";       
+                        if (activeCity.getName() == "Austin") {
+                            std::cout << "Reason: Heavy high-security chain blockades encircle the border checkpoint gates.\n";
+                        }
                     }
                 }
             }
-                        // Deduct all required inventory items to clear out blockades completely
-
         }
     }
 }
