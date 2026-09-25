@@ -1,6 +1,5 @@
 // AceZombie Survival.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
-
 #include <iostream>
 #include <vector>
 #include <string>
@@ -24,7 +23,8 @@ int getValidatedInput(int min, int max) {
             if (processedChars == userInput.length() && validatedNumber >= min && validatedNumber <= max) {
                 return validatedNumber;
             }
-        } catch (...) {}
+        }
+        catch (...) {}
         std::cout << "[!] Invalid action. Input a valid value matching (" << min << "-" << max << "): ";
     }
 }
@@ -41,7 +41,8 @@ void saveGameProgress(const Player& player) {
         saveFile << player.getRifles() << "\n";
         saveFile.close();
         std::cout << "\n[✓] Progress saved successfully to savegame.txt!\n";
-    } else {
+    }
+    else {
         std::cout << "\n[X] Error: Could not write save file framework data.\n";
     }
 }
@@ -60,7 +61,8 @@ void loadGameProgress(Player& player) {
             std::cout << "\n[✓] Progress loaded successfully from savegame.txt!\n";
         }
         saveFile.close();
-    } else {
+    }
+    else {
         std::cout << "\n[X] No save file found. Start playing to create one!\n";
     }
 }
@@ -70,8 +72,9 @@ int main() {
     TextNarrator narrator;
 
     // INITIALIZE STAGES DATABASE REPOSITORY: 5 Levels with Scaling Difficulty Quotas
+    // Austin now formally requires 1 Machete to clear!
     std::vector<CityLevel> levels;
-    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Highway cleared.", "Runner", 30, 1, 0));
+    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin secured! Highway cleared.", "Runner", 30, 1, 0));
     levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1));
     levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1));
     levels.push_back(CityLevel("Denver", "Scout Miller", "Mountain pass blockades active.", "Tunnel charges blown.", "Frost Stalker", 80, 2, 2));
@@ -84,7 +87,7 @@ int main() {
     if (pName.empty()) pName = "Operator_Ace";
 
     std::unique_ptr<Player> player = std::make_unique<Player>(pName);
-    
+
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
@@ -185,36 +188,33 @@ int main() {
                     if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
                         player->getRifles() >= activeCity.getRequiredRifles()) {
 
+                        // Deduct the inventory required to clear the sector barricade
+                        player->modifyMachetes(-activeCity.getRequiredMachetes());
+                        player->modifyRifles(-activeCity.getRequiredRifles());
+
                         narrator.printCityVictory(activeCity);
-                        playingFieldActive = false;
+                        playingFieldActive = false; // Successfully broke out of the level!
 
                         if (activeLevelIndex == player->getHighestLevel()) {
                             player->setHighestLevel(activeLevelIndex + 1);
                         }
                     }
                     else {
-                        std::cout << "\n[X] INSUFFICIENT HARDWARE TO ESCAPE SECTOR!\n";
-                        std::cout << " To secure a path out of here you still require:\n";
+                        // [FIXED] Changed hardcoded "AUSTIN" to activeCity.getName() so it adapts to Houston, Chicago, etc.
+                        std::cout << "\n[X] INSUFFICIENT ITEMS TO CLEAR BARRICADE & ESCAPE " << activeCity.getName() << " SECTOR!\n";
+                        std::cout << " To permanently clear this zone, you must spend:\n";
                         std::cout << " * " << activeCity.getRequiredMachetes() << " Machetes (You have: " << player->getMachetes() << ")\n";
                         std::cout << " * " << activeCity.getRequiredRifles() << " Rifles (You have: " << player->getRifles() << ")\n";
                     }
                 }
+
                 else if (gameAction == 4) {
-                    std::cout << "\n[!] Retracting forces. Aborting active courier run back to HQ...\n";
-                    playingFieldActive = false;
                 }
             }
         }
-
-            // Handles rendering summary text when leaving the mission space
-            if (player->getHp() <= 0) {
-                narrator.printGameOverScreen(false, player->getName());
-            }
-            else if (player->getHighestLevel() >= static_cast<int>(levels.size())) {
-                narrator.printGameOverScreen(true, player->getName());
-            }
-        }
     }
+}
+
         // Tips for Getting Started: 
         //   1. Use the Solution Explorer window to add/manage files
         //   2. Use the Team Explorer window to connect to source control
