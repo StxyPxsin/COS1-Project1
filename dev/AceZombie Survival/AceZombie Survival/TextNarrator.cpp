@@ -2,10 +2,10 @@
 #include "Player.h"
 #include "CityLevel.h"
 #include <iostream>
-#include <vector>
+#include <vector> 
 
 void TextNarrator::printMainTitle() const {
-    std::cout << "*********************************************************\n";
+    std::cout << "\n*********************************************************\n";
     std::cout << "               WELCOME TO ACEZOMBIES: SURVIVAL           \n";
     std::cout << "*********************************************************\n";
 }
@@ -64,7 +64,7 @@ void TextNarrator::printCityIntro(const CityLevel& level) const {
 
 void TextNarrator::printCityVictory(const CityLevel& level) const {
     std::cout << "\n[>>>] ZONE CONQUERED! SECURING PATHWAY OUT OF " << level.getName() << "...\n";
-    std::cout << level.getVictoryStory() << "\n";
+    std::cout << level.getVictoryStory() << "\n\n";
 }
 
 void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& level) const {

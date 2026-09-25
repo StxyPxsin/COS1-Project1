@@ -11,7 +11,7 @@
 #include "CityLevel.h"
 #include "TextNarrator.h"
 
-// INPUT VALIDATION METHOD
+// LECTURE 3 COMPLIANT SAFE INPUT VALIDATION
 int getValidatedInput(int min, int max) {
     std::string userInput;
     int validatedNumber;
@@ -29,7 +29,7 @@ int getValidatedInput(int min, int max) {
     }
 }
 
-// PERSISTENT PROGRESS REPOSITORIES
+// PERSISTENT PROGRESS LOG SYSTEM
 void saveGameProgress(const Player& player) {
     std::ofstream saveFile("savegame.txt");
     if (saveFile.is_open()) {
@@ -69,7 +69,7 @@ void loadGameProgress(Player& player) {
     }
 }
 
-// COMBAT SIMULATION HANDLER ENCAPSULATION SUBROUTINE
+// COMBAT SUBROUTINE ENGINE
 void executeCombatScenario(Player& playerInstance, const CityLevel& targetCity) {
     std::string zName = targetCity.getZombieVariant() + " Ace";
     int activeZombieHp = targetCity.getBaseZombieHp() + (std::rand() % 20);
@@ -82,7 +82,6 @@ void executeCombatScenario(Player& playerInstance, const CityLevel& targetCity) 
 
         if (fightChoice == 1) {
             if (playerInstance.getAmmo() > 0 && playerInstance.getRifles() > 0) {
-                playerInstance.getAmmo();
                 playerInstance.modifyAmmo(-1);
                 int strike = 25 + (std::rand() % 15);
                 activeZombieHp -= strike;
@@ -101,7 +100,7 @@ void executeCombatScenario(Player& playerInstance, const CityLevel& targetCity) 
         if (activeZombieHp > 0) {
             int incomingDmg = 8 + (std::rand() % 12);
             playerInstance.modifyHp(-incomingDmg);
-            std::cout << " [X] The Ace strikes back! Sustained -" << incomingDmg << "% damage.\n";
+            std::cout << " [X] The Ace bites back! Sustained -" << incomingDmg << "% damage.\n";
         }
     }
     if (playerInstance.getHp() > 0) std::cout << "[✓] Hostile Ace eliminated successfully.\n";
@@ -129,6 +128,7 @@ int main() {
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
+    // PRE-GAME LOBBY CYCLE
     while (systemLobbyRunning && player->getHp() > 0) {
         narrator.printPreGameMenu(player->getName());
         int lobbyChoice = getValidatedInput(1, 6);
@@ -143,6 +143,7 @@ int main() {
             bool playingFieldActive = true;
             bool triggerNewIntroText = true;
 
+            // ACTIVE FIELD OPERATIONS CYCLE
             while (playingFieldActive && player->getHp() > 0) {
                 CityLevel& activeCity = levels[activeLevelIndex];
 
@@ -177,7 +178,6 @@ int main() {
                         std::cout << "[+] Discovered specialized deployment crates! Gained +5 Ammo & +1 Medkit.\n";
                     }
                     else {
-                        // Regular scavenging zombie encounter
                         executeCombatScenario(*player, activeCity);
                     }
                 }
@@ -192,7 +192,6 @@ int main() {
                     }
                 }
                 else if (gameAction == 3) {
-                    // ATTACK ENCOUNTER CHECK UPON LEAVING TOO SOON
                     if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
                         player->getRifles() >= activeCity.getRequiredRifles() &&
                         player->getBoltCutters() >= activeCity.getRequiredBoltCutters()) {
@@ -209,18 +208,86 @@ int main() {
                         }
                     }
                     else {
-                        // IMMERSIVE ERROR RESPONSE BY LEVEL MIXTURE SPECIFICATION EXCLUSIVENESS
                         std::cout << "\n=========================================================================\n";
-                        std::cout << "[X] EXTRACTION DENIED: The checkpoint perimeter line out of " << activeCity.getName() << " is completely locked down!\n";       
+                        std::cout << "[X] EXTRACTION DENIED: The checkpoint perimeter line out of " << activeCity.getName() << " is completely locked down!\n";
+
                         if (activeCity.getName() == "Austin") {
                             std::cout << "Reason: Heavy high-security chain blockades encircle the border checkpoint gates.\n";
+                            std::cout << "You cannot push past without clear tools to slash down guards and cut thick steel bounds!\n";
                         }
+                        else if (activeCity.getName() == "Houston") {
+                            std::cout << "Reason: Long-range acid variants have trapped the marshaling docks.\n";
+                            std::cout << "You must secure firepower and structural clearance tools to survive the push through!\n";
+                        }
+                        else { std::cout << "Reason: Quarantine walls are blockaded. You lack the specified gear required to bridge the gap.\n"; }std::cout << "\nHardware Requirements Matrix to Unlock Border Path:\n"; std::cout << " * Machetes Required: " << activeCity.getRequiredMachetes() << " (You have: " << player->getMachetes() << ")\n"; std::cout << " * Rifles Required: " << activeCity.getRequiredRifles() << " (You have: " << player->getRifles() << ")\n"; std::cout << " * Bolt Cutters Required: " << activeCity.getRequiredBoltCutters() << " (You have: " << player->getBoltCutters() << ")\n"; std::cout << "=========================================================================\n"; std::cout << "\n[⚠️] SWARM ALERT: Your noisy breakout attempt alerted nearby swarms!\n"; executeCombatScenario(*player, activeCity);
                     }
                 }
+                else if (gameAction == 4) { std::cout << "\n[!] Retracting forces. Aborting active courier run back to HQ...\n"; playingFieldActive = false; }
+            }if (player->getHp() <= 0) {
+                narrator.printGameOverScreen(false, player->getName());
+            }
+            else if (player->getHighestLevel() >= static_cast<int>(levels.size())) {
+                // [FIXED]: Added <int> type template specifiers to compile successfully
+                narrator.printGameOverScreen(true, player->getName());
+            }
+
+            // [FIXED]: Closed out the deployment bracket cleanly before transitioning to lobbyChoice 3
+            systemLobbyRunning = (player->getHp() > 0 && player->getHighestLevel() < static_cast<int>(levels.size()));
+        }
+        else if (lobbyChoice == 2) { narrator.printInventoryView(*player); std::cout << "Enter '1' to close inventory and return to HQ Lobby: "; getValidatedInput(1, 1); }
+        if (lobbyChoice == 3) {
+            narrator.printLevelSelectionMenu(levels, player->getHighestLevel());
+
+            // [FIXED]: Added <int> type template specifiers here as well
+            int selectTarget = getValidatedInput(0, static_cast<int>(levels.size()));
+
+            if (selectTarget > 0 && selectTarget <= player->getHighestLevel() + 1) {
+                int selectedLevelIdx = selectTarget - 1;
+                std::cout << "\n[>>>] Simulation pathway set to " << levels[selectedLevelIdx].getName() << "!\n";
+
+                bool simulationActive = true;
+                bool triggerIntro = true;
+
+                while (simulationActive && player->getHp() > 0) {
+                    CityLevel& simCity = levels[selectedLevelIdx];
+                    if (triggerIntro) {
+                        narrator.printCityIntro(simCity);
+                        triggerIntro = false;
+                    }
+                    narrator.printPlayerDashboard(*player, simCity);
+                    std::cout << "Simulation Options:\n1. Search simulation blocks (+3 Ammo)\n2. Rest coordinates (+20% HP)\n3. Exit simulation\nChoose Action (1-3): ";
+
+                    int simAct = getValidatedInput(1, 3);
+                    if (simAct == 1) {
+                        std::cout << "\nSearching simulation blocks...\n";
+                        player->modifyAmmo(3);
+                        std::cout << "[+] Found safe container reserves. Loaded +3 ammo rounds.\n";
+                    }
+                    else if (simAct == 2) {
+                        player->modifyHp(20);
+                        std::cout << "\n[+] Scoped resting coordinates. Restored 20% health.\n";
+                    }
+                    else if (simAct == 3) {
+                        std::cout << "\n[✓] Simulation sector path exited cleanly.\n";
+                        simulationActive = false;
+                    }
+                }
+
+                if (player->getHp() <= 0) {
+                    narrator.printGameOverScreen(false, player->getName());
+                }
+            }
+            else if (selectTarget != 0) {
+                std::cout << "\n[X] ACCESS RESTRICTED: Secure navigation channels to this city are completely dark.\n";
+                std::cout << "You cannot jump to this region until you play the main campaign and clear preceding cities!\n";
             }
         }
-    }
-}
+        else if (lobbyChoice == 4) { loadGameProgress(*player); }
+        else if (lobbyChoice == 5) { saveGameProgress(*player); }
+        else if (lobbyChoice == 6) { systemLobbyRunning = false; std::cout << "\nClosing security uplink interface lines...\n"; }
+    }if (player->getHp() <= 0) { std::cout << "\nTerminal connection disconnected. Operation terminated.\n"; }
+    else { std::cout << "\nHQ Terminal deactivated cleanly. Goodbye.\n"; }return 0; }
+        
 
         // Tips for Getting Started: 
         //   1. Use the Solution Explorer window to add/manage files

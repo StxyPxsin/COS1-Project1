@@ -1,12 +1,11 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <vector> // <-- [FIX] This tells the header what a std::vector is!
 
-// Forward Declarations to completely eliminate file compilation dependency loops
+// Forward Declarations so the compiler knows these classes exist
 class Player;
 class CityLevel;
 
-// This class handles all UI output formatting, borders, and storytelling prompts.
 class TextNarrator {
 public:
     void printMainTitle() const;
