@@ -24,8 +24,7 @@ int getValidatedInput(int min, int max) {
             if (processedChars == userInput.length() && validatedNumber >= min && validatedNumber <= max) {
                 return validatedNumber;
             }
-        }
-        catch (...) {}
+        } catch (...) {}
         std::cout << "[!] Invalid action. Input a valid value matching (" << min << "-" << max << "): ";
     }
 }
@@ -42,8 +41,7 @@ void saveGameProgress(const Player& player) {
         saveFile << player.getRifles() << "\n";
         saveFile.close();
         std::cout << "\n[✓] Progress saved successfully to savegame.txt!\n";
-    }
-    else {
+    } else {
         std::cout << "\n[X] Error: Could not write save file framework data.\n";
     }
 }
@@ -62,8 +60,7 @@ void loadGameProgress(Player& player) {
             std::cout << "\n[✓] Progress loaded successfully from savegame.txt!\n";
         }
         saveFile.close();
-    }
-    else {
+    } else {
         std::cout << "\n[X] No save file found. Start playing to create one!\n";
     }
 }
@@ -87,7 +84,7 @@ int main() {
     if (pName.empty()) pName = "Operator_Ace";
 
     std::unique_ptr<Player> player = std::make_unique<Player>(pName);
-
+    
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
@@ -107,7 +104,7 @@ int main() {
             bool playingFieldActive = true;
             bool triggerNewIntroText = true;
 
-            // ACTIVE GAMEPLAY LOOP
+            // ACTIVE IN-FIELD MISSION LOOP
             while (playingFieldActive && player->getHp() > 0) {
                 CityLevel& activeCity = levels[activeLevelIndex];
 
@@ -118,7 +115,7 @@ int main() {
 
                 narrator.printPlayerDashboard(*player, activeCity);
                 narrator.printInGameMenu();
-                int gameAction = getValidatedInput(1, 3);
+                int gameAction = getValidatedInput(1, 4);
 
                 if (gameAction == 1) {
                     std::cout << "\nSearching dark sector buildings with " << activeCity.getSurvivorName() << "...\n";
@@ -202,22 +199,22 @@ int main() {
                         std::cout << " * " << activeCity.getRequiredRifles() << " Rifles (You have: " << player->getRifles() << ")\n";
                     }
                 }
+                else if (gameAction == 4) {
+                    std::cout << "\n[!] Retracting forces. Aborting active courier run back to HQ...\n";
+                    playingFieldActive = false;
+                }
             }
         }
-        else if (lobbyChoice == 2) {
-            // Inspect Storage Locker Inventory - Clean exit configuration applied
-            narrator.printInventoryView(*player);
-            std::cout << "Enter '1' to close inventory and return to HQ Lobby: ";
-            getValidatedInput(1, 1);
-        }
-        else if (lobbyChoice == 3) {
-            // Level Selection Matrix (Replay passed zones)
-            narrator.printLevelSelectionMenu(levels, player->getHighestLevel());
-            // Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-        // Debug program: F5 or Debug > Start Debugging menu
+
+            // Handles rendering summary text when leaving the mission space
+            if (player->getHp() <= 0) {
+                narrator.printGameOverScreen(false, player->getName());
+            }
+            else if (player->getHighestLevel() >= static_cast<int>(levels.size())) {
+                narrator.printGameOverScreen(true, player->getName());
+            }
         }
     }
-}
         // Tips for Getting Started: 
         //   1. Use the Solution Explorer window to add/manage files
         //   2. Use the Team Explorer window to connect to source control

@@ -51,15 +51,16 @@ Challenges – What obstacles did you encounter, and how are you addressing them
 ### Week 3
 
 - ⚙️ **Overview** – What did you work on this past week?
-    
+    This past week I worked on programing a storage for the player and a saving progress in the game as well while rewriting some of the narrative and changing some of each file to have the save mode(progressed save). Also having the levels get harder. 
 - 🛠️ **Improvements** – What changes, refinements, or refactoring did you complete this week?
+-The game's navigation loop to feature a dedicated Pre-Game HQ Lobby Menu using a dual-loop lifecycle model. I completely overhauled our text rendering layer by integrating a multi-file TextNarrator module using forward class declarations to prevent circular dependencies. Most importantly, I removed all legacy console stream management and replaced it with a foolproof std::stoi + try/catch validation filter powered entirely by string-parsing string extractions.
     
 - 🌵 **Challenges** – What obstacles did you encounter, and how are you addressing them?
-    
+    -Handling infinite loops and execution freezes within our non-linear navigation sub-menus (such as the Level Selector and Inventory Inspect screens). If a player smashed non-numeric keys, the system would lock up or skip input sequences automatically. I addressed this by enforcing explicit input gating, changing state trackers into string lines via std::getline , and mapping distinct escape state conditions (like simulationActive = false;) inside our menu switch blocks to ensure a clean path back to the hub lobby.
 - 🏆 **Accomplishments** – What is something you learned, improved, or "leveled up" on this week?
-    
-- 🔮 **Next Steps** – What do you plan to complete before Week 4?.
-
+	-This week I learned/improved on: Implementing persistent data serialization systems using the standard C++ file stream <fstream> library framework. I successfully leveled up my understanding of file input/output patterns by converting dynamic runtime memory object allocations directly into persistent file data structures (savegame.txt), and learned how to mathematically recalculate those values upon data restoration so the player profile scales cleanly.
+🔮 **Next Steps** – What do you plan to complete before Week 4?.
+- Expanding the turn-based combat sub-system by introducing dynamic random encounter tables and item durability modifiers. I will also construct a comprehensive automated build test script to systematically trace edge-case inputs across every game loop frame, ensuring complete stability before our final grading presentation window opens.
 ### Week 4
 
 My final stand up...
