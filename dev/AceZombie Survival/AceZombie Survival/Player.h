@@ -1,6 +1,4 @@
 #pragma once
-#include <string>
-
 #pragma once
 #include <string>
 
@@ -15,6 +13,7 @@ private:
     int medkits;
     int machetes;
     int rifles;
+    int boltCutters; // [NEW FIELD]
 
 public:
     Player(std::string playerName);
@@ -26,6 +25,7 @@ public:
     int getMedkits() const;
     int getMachetes() const;
     int getRifles() const;
+    int getBoltCutters() const; // [NEW GETTER]
 
     void setHighestLevel(int levelIndex);
     void modifyHp(int amount);
@@ -33,5 +33,6 @@ public:
     void modifyMedkits(int amount);
     void modifyMachetes(int amount);
     void modifyRifles(int amount);
+    void modifyBoltCutters(int amount); // [NEW MUTATOR]
 };
 

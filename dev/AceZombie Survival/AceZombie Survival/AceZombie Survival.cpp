@@ -11,7 +11,6 @@
 #include "CityLevel.h"
 #include "TextNarrator.h"
 
-// STRICT LECTURE 3 COMPLIANT INPUT PROCESSING FUNCTION
 int getValidatedInput(int min, int max) {
     std::string userInput;
     int validatedNumber;
@@ -29,7 +28,6 @@ int getValidatedInput(int min, int max) {
     }
 }
 
-// PERSISTENT FSTREAM SAVE SYSTEM CORE FUNCTIONS
 void saveGameProgress(const Player& player) {
     std::ofstream saveFile("savegame.txt");
     if (saveFile.is_open()) {
@@ -39,6 +37,7 @@ void saveGameProgress(const Player& player) {
         saveFile << player.getMedkits() << "\n";
         saveFile << player.getMachetes() << "\n";
         saveFile << player.getRifles() << "\n";
+        saveFile << player.getBoltCutters() << "\n"; // [NEW ROW SAVED]
         saveFile.close();
         std::cout << "\n[✓] Progress saved successfully to savegame.txt!\n";
     }
@@ -50,14 +49,15 @@ void saveGameProgress(const Player& player) {
 void loadGameProgress(Player& player) {
     std::ifstream saveFile("savegame.txt");
     if (saveFile.is_open()) {
-        int level, hp, ammo, medkits, machetes, rifles;
-        if (saveFile >> level >> hp >> ammo >> medkits >> machetes >> rifles) {
+        int level, hp, ammo, medkits, machetes, rifles, boltCutters;
+        if (saveFile >> level >> hp >> ammo >> medkits >> machetes >> rifles >> boltCutters) {
             player.setHighestLevel(level);
             player.modifyHp(hp - player.getHp());
             player.modifyAmmo(ammo - player.getAmmo());
             player.modifyMedkits(medkits - player.getMedkits());
             player.modifyMachetes(machetes - player.getMachetes());
             player.modifyRifles(rifles - player.getRifles());
+            player.modifyBoltCutters(boltCutters - player.getBoltCutters()); // [NEW ROW LOADED]
             std::cout << "\n[✓] Progress loaded successfully from savegame.txt!\n";
         }
         saveFile.close();
@@ -72,13 +72,13 @@ int main() {
     TextNarrator narrator;
 
     // INITIALIZE STAGES DATABASE REPOSITORY: 5 Levels with Scaling Difficulty Quotas
-    // Austin now formally requires 1 Machete to clear!
+    // [UPDATED RULES]: Parameters match name, companion, stories, variant, zombieHp, reqMachetes, reqRifles, reqBoltCutters
     std::vector<CityLevel> levels;
-    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin secured! Highway cleared.", "Runner", 30, 1, 0));
-    levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1));
-    levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1));
-    levels.push_back(CityLevel("Denver", "Scout Miller", "Mountain pass blockades active.", "Tunnel charges blown.", "Frost Stalker", 80, 2, 2));
-    levels.push_back(CityLevel("New York", "Captain Briggs", "Times Square barricaded.", "Helipad reached.", "Goliath Swarm Master", 110, 3, 3));
+    levels.push_back(CityLevel("Austin", "Marshal Davis", "Radio channels down.", "Austin chain blockades cut! Highway cleared.", "Runner", 30, 1, 0, 1)); // <-- [AUSTIN REQ CHANGES]
+    levels.push_back(CityLevel("Houston", "Sarah Connor", "Bayou tunnels flooded.", "Refinery bypass open.", "Acid Spitter", 45, 1, 1, 0));
+    levels.push_back(CityLevel("Chicago", "Dr. Vance", "Subway frozen down.", "Train tracks switched.", "Armored Riot", 60, 2, 1, 0));
+    levels.push_back(CityLevel("Denver", "Scout Miller", "Mountain pass blockades active.", "Tunnel charges blown.", "Frost Stalker", 80, 2, 2, 1));
+    levels.push_back(CityLevel("New York", "Captain Briggs", "Times Square barricaded.", "Helipad reached.", "Goliath Swarm Master", 110, 3, 3, 2));
 
     narrator.printMainTitle();
     std::cout << "Enter Player Handle: ";
@@ -91,13 +91,11 @@ int main() {
     int activeLevelIndex = 0;
     bool systemLobbyRunning = true;
 
-    // MAIN PRE-GAME HUB MENU SYSTEM LOOP
     while (systemLobbyRunning && player->getHp() > 0) {
         narrator.printPreGameMenu(player->getName());
         int lobbyChoice = getValidatedInput(1, 6);
 
         if (lobbyChoice == 1) {
-            // Launch Active Campaign Run
             activeLevelIndex = player->getHighestLevel();
             if (activeLevelIndex >= static_cast<int>(levels.size())) {
                 std::cout << "\n[★] All campaign regions cleared! Use level select to replay levels.\n";
@@ -107,7 +105,6 @@ int main() {
             bool playingFieldActive = true;
             bool triggerNewIntroText = true;
 
-            // ACTIVE IN-FIELD MISSION LOOP
             while (playingFieldActive && player->getHp() > 0) {
                 CityLevel& activeCity = levels[activeLevelIndex];
 
@@ -122,7 +119,7 @@ int main() {
 
                 if (gameAction == 1) {
                     std::cout << "\nSearching dark sector buildings with " << activeCity.getSurvivorName() << "...\n";
-                    int dropRoll = std::rand() % 4;
+                    int dropRoll = std::rand() % 5; // [UPDATED LOOT TABLE MATRIX TO 5 ROWS]
                     if (dropRoll == 0) {
                         player->modifyMachetes(1);
                         std::cout << "[+] Found a sharp Steel Machete blade!\n";
@@ -132,6 +129,10 @@ int main() {
                         std::cout << "[+] Found a functional Tactical Assault Rifle!\n";
                     }
                     else if (dropRoll == 2) {
+                        player->modifyBoltCutters(1); // [NEW SCAVENGE ITEM DROP]
+                        std::cout << "[+] Discovered heavy-duty Bolt Cutters embedded in an old utility grid!\n";
+                    }
+                    else if (dropRoll == 3) {
                         player->modifyAmmo(5);
                         player->modifyMedkits(1);
                         std::cout << "[+] Discovered specialized deployment crates! Gained +5 Ammo & +1 Medkit.\n";
@@ -184,31 +185,25 @@ int main() {
                     }
                 }
                 else if (gameAction == 3) {
-                    // REQUIREMENT CHECKS TO CLEAR HARDER PROGRESSION GATES
+                    // REQUIREMENT CHECKS TO CLEAR HARDER PROGRESSION GATES WITH FIXED DYNAMIC TEXT
                     if (player->getMachetes() >= activeCity.getRequiredMachetes() &&
-                        player->getRifles() >= activeCity.getRequiredRifles()) {
+                        player->getRifles() >= activeCity.getRequiredRifles() &&
+                        player->getBoltCutters() >= activeCity.getRequiredBoltCutters()) { // [NEW ADAPTED GATE CONDITIONAL ITEM CHECK]
 
-                        // Deduct the inventory required to clear the sector barricade
+                        // Deduct all required inventory items to clear out blockades completely
                         player->modifyMachetes(-activeCity.getRequiredMachetes());
                         player->modifyRifles(-activeCity.getRequiredRifles());
+                        player->modifyBoltCutters(-activeCity.getRequiredBoltCutters()); // [CONSUMPTION APPLIED]
 
                         narrator.printCityVictory(activeCity);
-                        playingFieldActive = false; // Successfully broke out of the level!
+                        playingFieldActive = false;
 
                         if (activeLevelIndex == player->getHighestLevel()) {
                             player->setHighestLevel(activeLevelIndex + 1);
                         }
                     }
                     else {
-                        // [FIXED] Changed hardcoded "AUSTIN" to activeCity.getName() so it adapts to Houston, Chicago, etc.
-                        std::cout << "\n[X] INSUFFICIENT ITEMS TO CLEAR BARRICADE & ESCAPE " << activeCity.getName() << " SECTOR!\n";
-                        std::cout << " To permanently clear this zone, you must spend:\n";
-                        std::cout << " * " << activeCity.getRequiredMachetes() << " Machetes (You have: " << player->getMachetes() << ")\n";
-                        std::cout << " * " << activeCity.getRequiredRifles() << " Rifles (You have: " << player->getRifles() << ")\n";
                     }
-                }
-
-                else if (gameAction == 4) {
                 }
             }
         }
