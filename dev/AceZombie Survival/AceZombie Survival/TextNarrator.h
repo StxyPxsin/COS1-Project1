@@ -1,7 +1,8 @@
 #pragma once
 #include <string>
-#include <vector>
+#include <vector> // <-- [FIX] This tells the header what a std::vector is!
 
+// Forward Declarations so the compiler knows these classes exist
 class Player;
 class CityLevel;
 
@@ -17,6 +18,4 @@ public:
     void printInGameMenu() const;
     void printGameOverScreen(bool hasWon, const std::string& playerName) const;
 };
-
-
 

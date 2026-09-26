@@ -2,10 +2,10 @@
 #include "Player.h"
 #include "CityLevel.h"
 #include <iostream>
-#include <vector>
+#include <vector> 
 
 void TextNarrator::printMainTitle() const {
-    std::cout << "*********************************************************\n";
+    std::cout << "\n*********************************************************\n";
     std::cout << "               WELCOME TO ACEZOMBIES: SURVIVAL           \n";
     std::cout << "*********************************************************\n";
 }
@@ -32,6 +32,7 @@ void TextNarrator::printInventoryView(const Player& player) const {
     std::cout << " [Field Trauma Kits]  : " << player.getMedkits() << " Packs\n";
     std::cout << " [Steel Machetes]     : " << player.getMachetes() << " Blades\n";
     std::cout << " [Tactical Assault]   : " << player.getRifles() << " Long Guns\n";
+    std::cout << " [Heavy Bolt Cutters] : " << player.getBoltCutters() << " Tools\n";
     std::cout << "---------------------------------------------------------\n";
 }
 
@@ -43,10 +44,11 @@ void TextNarrator::printLevelSelectionMenu(const std::vector<CityLevel>& levels,
         std::cout << " Level " << i + 1 << ": " << levels[i].getName();
         if (static_cast<int>(i) <= highestUnlockedLevel) {
             std::cout << " [UNLOCKED] (Req: " << levels[i].getRequiredMachetes() << " Machetes, "
-                << levels[i].getRequiredRifles() << " Rifles)\n";
+                << levels[i].getRequiredRifles() << " Rifles, "
+                << levels[i].getRequiredBoltCutters() << " Bolt Cutters)\n";
         }
         else {
-            std::cout << " [LOCKED - Complete previous zones to clear pathway]\n";
+            std::cout << " [LOCKED]\n";
         }
     }
     std::cout << " Choose a level or input 0 to cancel: ";
@@ -62,7 +64,7 @@ void TextNarrator::printCityIntro(const CityLevel& level) const {
 
 void TextNarrator::printCityVictory(const CityLevel& level) const {
     std::cout << "\n[>>>] ZONE CONQUERED! SECURING PATHWAY OUT OF " << level.getName() << "...\n";
-    std::cout << level.getVictoryStory() << "\n";
+    std::cout << level.getVictoryStory() << "\n\n";
 }
 
 void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& level) const {
@@ -70,7 +72,8 @@ void TextNarrator::printPlayerDashboard(const Player& player, const CityLevel& l
     std::cout << " ZONE: " << level.getName() << " | ASSISTING COMPANION: " << level.getSurvivorName() << "\n";
     std::cout << " INVENTORY -> HP: " << player.getHp() << "% | Ammo: " << player.getAmmo()
         << " | Machetes: " << player.getMachetes() << "/" << level.getRequiredMachetes()
-        << " | Rifles: " << player.getRifles() << "/" << level.getRequiredRifles() << "\n";
+        << " | Rifles: " << player.getRifles() << "/" << level.getRequiredRifles()
+        << " | Bolt Cutters: " << player.getBoltCutters() << "/" << level.getRequiredBoltCutters() << "\n";
     std::cout << "---------------------------------------------------------\n";
 }
 
@@ -79,7 +82,8 @@ void TextNarrator::printInGameMenu() const {
     std::cout << "1. Scavenge Abandoned Safehouses with Companion\n";
     std::cout << "2. Administer Field Trauma Medkit (-1 Kit)\n";
     std::cout << "3. Attempt to Break Out through Checkpoint Gates to Escape City\n";
-    std::cout << "Choose Action (1-3): ";
+    std::cout << "4. Abort Run and Return to HQ Lobby\n";
+    std::cout << "Choose Action (1-4): ";
 }
 
 void TextNarrator::printGameOverScreen(bool hasWon, const std::string& playerName) const {
