@@ -64,3 +64,26 @@ Challenges – What obstacles did you encounter, and how are you addressing them
 ### Week 4
 
 My final stand up...
+-This past week, I completely finalized the body of **AceZombies Survival**, transitioning it from a modular prototype into a feature-complete text-based strategy game. I successfully wrapped the entire game loop inside a session manager to allow replay ability, integrated a tactical pre-game lobby, connected the mid-mission escape commands, and ensured all end-game win/loss screens accurately trigger under any termination boundary. 
+-Before final submission, I polished several critical system layers to maximize stability and software quality: Retired Ancient Console Input Hacks: Replaced all fragile legacy tracking code (std::cin.clear() and std::cin.ignore()) with a rigorous, lecture-compliant std::stoi + try/catch validation filter** driven by std::getline. *Fixed Dynamic UI Dashboard Meters: Refactored `TextNarrator.cpp` to dynamically read current city parameters, fixing a layout bug where target metrics displayed hardcoded string boundaries (e.g., changing fixed 2/0 weapon trackers to dynamic 2/2 outputs based on the active city layer).  Mid-Fight Medical Implementation:  Added a crucial third combat stance action (3. Use Field Trauma Medkit) allowing players to heal dynamically during turn-based sub-loops instead of restricting items solely to macro-exploration screens. Granular Level-Specific Extraction Failure Logs: Tied clear narrative reasons to extraction bottlenecks, preventing the system from cross-blending different city logs when gate constraints were failed.
+
+Challenges – What obstacles did you face, and how did you overcome them?
+The most significant obstacle encountered during wrap-up was a series of compilation crashes and logic freezes caused by **bracket nesting offsets and invalid casting statements** inside `main.cpp`. Misplaced braces accidentally locked multi-layered menus into Option 1's local scope, while using un-templated static_cast(...) arrays caused the compiler to lose track of vector sizes. 
+
+I systematically overcame these anomalies using the  Visual Studio Debugger:
+1. I isolated scope properties by tracking variable lifecycles across active breakpoints.
+2. I refactored the logic tree to completely separate conditional blocks.
+3. I enforced clean brace formatting and updated code lines to use robust integer conversions like `static_cast<int>(levels.size()).
+
+
+
+## 📚 Biggest Takeaway – Looking back, what was the most valuable thing you learned during this course?
+My biggest takeaway from this course was mastering **Separation of Concerns and Defensive Programming**. Learning how to properly isolate presentation code (`TextNarrator`), narrative metadata (`CityLevel`), character state metrics (`Player`), and core loop logic (`main.cpp`) using clean `.h` and `.cpp` file management completely changed how I think about programming. 
+
+Additionally, learning how to safely capture human console inputs as raw string lines *before* converting them inside guarded try/catch conditions taught me how to write highly stable, crash-proof logic trees that hold up under unpredictable user behavior.
+
+## 🔮 Future Development – If you continued this project after the course, what would you build or improve next?
+If I expand AceZombies beyond this course sequence, my next priorities would focus on these structural features:
+1. Item Durability & Real Ammo Caps: Introduce weapon degradation trackers where blades can break or guns jam if not maintained via safehouse scraps.
+2. Encapsulated Class State Save Systems: Upgrade our <fstream> save-state engine to pass encrypted data streams or structural JSON configurations, preventing users from altering character metrics by manually rewriting savegame.txt.
+3. Dynamic Squad Management:  Expand the companion system so that characters like Marshal Davis or Sarah Connor join your active party as persistent player entities with unique stats, rather than serving as static storyline text references.
